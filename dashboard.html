@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fraud Management System | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bulma.min.css" />
+    <link rel="stylesheet" href="css/fontawesome/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/util.js"></script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .lds-ring {
+            display: inline-block;
+            position: absolute;
+            top: 200%;
+            left: 50%;
+            transform: translate(-20%, -50%);
+            width: 10px;
+            height: 10px;
+        }
+
+        .lds-ring div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            margin: 8px;
+            border: 8px solid rgb(5, 68, 104);
+            border-radius: 50%;
+            animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: rgb(5, 68, 104) transparent transparent transparent;
+        }
+
+        .lds-ring div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+
+        .lds-ring div:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+
+        .lds-ring div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
+
+        @keyframes lds-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="modal-assign" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Assign</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="content">
+                    <div class="container">
+                        <div class="field">
+                            <p class="control">
+                                <label>User<span style="font-size:15px; color: red;" for="assign-user"></span></label>
+                                <div class="select" style="width: 100%;">
+                                    <select id="assign-user" style="width: 100%;">
+                                        <option value="">Select User</option>
+                                    </select>
+                                </div>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <p class="control">
+                                <label>Description</label>
+                                <textarea class="textarea" name="assign-desc" id="assign-desc" cols="30"
+                                    rows="10"></textarea>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button onclick="storeAssign()" id="button-assign" class="button is-success"><span
+                        class="icon is-small"><i class="fas fa-check"></i></span><span>Assign</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-view-transaction" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content" style="width:640px">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">View Transaction Detail</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <textarea id="transaction_detail" class="textarea" placeholder="Transaction detail will be shown here"
+                    style="height:60vh"></textarea>
+            </div>
+            <footer class="modal-card-foot">
+                <button class="button modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Close</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="columns m-0">
+        <div id="sidemenu" class="column is-narrow" style="width: 250px; background: rgb(5, 68, 104);">
+        </div>
+        <div class="column mt-1 ml-1 mr-1 mb-6" style="background-color: #f4fbff;">
+            <p class="panel-heading fds-background-dark mb-3" style="background: rgb(5, 68, 104); color: white">
+                Dashboard</p>
+            <div class="columns">
+                <div class="column">
+                    <nav class="panel" style="height:310px">
+                        <p class="panel-heading" style="background: rgb(5, 68, 104); color: white">Suspicious
+                            Transaction</p>
+                        <div style="height:250px;overflow-x: auto">
+                            <table id="table-transaction" style="position: relative;"
+                                class="table is-fullwidth fds-background-transparent">
+                                <thead>
+                                    <tr>
+                                        <th class="has-text-centered"><small>Datetime</small></th>
+                                        <th class="has-text-centered"><small>Channel</small></th>
+                                        <th class="has-text-centered"><small>Account No</small></th>
+                                        <th class="has-text-centered"><small>Pan No</small></th>
+                                        <th class="has-text-centered"><small>Transaction Type</small></th>
+                                        <th class="has-text-centered"><small>Amount</small></th>
+                                        <th class="has-text-centered"><small>Refrence Number</small></th>
+                                        <th class="has-text-centered"><small>Rule</small></th>
+                                        <th class="has-text-centered"><small>Status</small></th>
+                                        <th class="has-text-centered"><small>Assign To</small></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="8" style="display: grid; place-items: center;">
+                                            <center>
+                                                <div class="lds-ring">
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                    <div></div>
+                                                </div>
+                                            </center>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <nav class="panel" style="height:375px">
+                        <p class="panel-heading" style="background: rgb(5, 68, 104); color: white">Parameters</p>
+                        <nav class="level p-5 mx-5 has-text-centered" style="height:300px">
+                            <a href="rule.html" style="color: black;">
+                                <strong style="font-size: 50px;" id="rules-total">0</strong>
+                                <h3 style="font-size: 20px;">Rules</h3>
+                            </a>
+                            <a href="parameter.html" style="color: black;">
+                                <strong style="font-size: 50px;" id="watchlist-account-total">0</strong>
+                                <h3 style="font-size: 20px;">Watchlist Account</h3>
+                            </a>
+                            <a href="parameter.html" style="color: black;">
+                                <strong style="font-size: 50px;" id="watchlist-card-total">0</strong>
+                                <h3 style="font-size: 20px;">Watchlist Card</h3>
+                            </a>
+                            <a href="parameter.html" style="color: black;">
+                                <strong style="font-size: 50px;" id="blacklist-account-total">0</strong>
+                                <h3 style="font-size: 20px;">Blacklist Account</h3>
+                            </a>
+                            <a href="parameter.html" style="color: black;">
+                                <strong style="font-size: 50px;" id="blacklist-card-total">0</strong>
+                                <h3 style="font-size: 20px;">Blacklist Card</h3>
+                            </a>
+                            <a href="parameter.html" style="color: black;">
+                                <strong style="font-size: 50px;" id="terrorist-total">0</strong>
+                                <h3 style="font-size: 20px;">Terrorist</h3>
+                            </a>
+                            <!-- <canvas id="myBarChart" style="width: 100% !important;"></canvas> -->
+                        </nav>
+                    </nav>
+                </div>
+                <!-- <div class="column">
+                    <nav class="panel" style="height:375px">
+                        <p class="panel-heading">Multi Channel Transaction</p>
+                        <center>
+                            <div class="p-3">
+                                <canvas id="myPieChart"></canvas>
+                            </div>
+                        </center>
+                    </nav>
+                </div> -->
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <nav class="panel" style="height:375px">
+                        <p class="panel-heading" style="background: rgb(5, 68, 104); color: white">Transaction</p>
+                        <canvas id="transaction-chart"></canvas>
+                    </nav>
+                </div>
+                <div class="column">
+                    <nav class="panel" style="height:375px">
+                        <p class="panel-heading" style="background: rgb(5, 68, 104); color: white">Suspicious
+                            Transaction Summary</p>
+                        <canvas id="fraud-transaction-chart"></canvas>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let opcode;
+        var fraudTransactions;
+        var transactions;
+        var charts = [0, 0, 0, 0, 0, 0];
+        var protocol = location.protocol;
+        var slashes = protocol.concat("//");
+        var host = slashes.concat(window.location.host);
+
+        // or as you probably should do
+        var host = location.protocol.concat("//").concat(window.location.host);
+        var BASE_URL = host + "/backend/3000/";
+        var selectedStan;
+        var trx_response = [];
+
+
+        function loadUser() {
+            $.get(BASE_URL + 'user', function (response) {
+                $('#assign-user .assign-user').remove();
+
+                response.forEach(item => {
+                    $('#assign-user').append(`
+                            <option class="assign-user" value="${item.user_name}">${item.user_name}</option>
+                        `);
+                })
+            });
+        }
+
+        function showModalAssign(stan, business_cycle) {
+            selectedStan = stan;
+
+            $("#modal-assign").addClass("is-active");
+        }
+
+        function storeAssign() {
+            data = {
+                stan: selectedStan,
+                assign_to: {
+                    user: $('#assign-user').val(),
+                    description: $('#assign-desc').val()
+                }
+            }
+            $.ajax({
+                url: BASE_URL + 'assign',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (data) {
+                    $("#modal-assign").removeClass("is-active");
+                    alert('Assign berhasil');
+                    loadTransaction();
+                    var data = {
+                        username: sessionStorage.getItem('user_name'),
+                        remarks: JSON
+                            .stringify({
+                                stan: selectedStan,
+                                assign_to: $('#assign-user').val(),
+                                assign_desc: $('#assign-desc').val(),
+                                token: sessionStorage
+                                    .getItem(
+                                        'token'
+                                    ),
+                                role_id: sessionStorage
+                                    .getItem(
+                                        'role_id'
+                                    ),
+                                resp_code: '00',
+                                resp_description: 'Assign berhasil',
+                            }),
+                        activity_id: 15
+                    };
+                    $.ajax({
+                        url: BASE_URL + 'audit-trail',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data),
+                        success: function (data) {
+                            location.reload();
+                        },
+                        error: function (
+                            err) {
+                            console.log(
+                                'Error:',
+                                err);
+                        }
+                    });
+                },
+                error: function (err) {
+                    console.log('Error:', err);
+                }
+            });
+        }
+
+        function translateChannel(channel) {
+            let translate = '';
+
+            if (channel.slice(0, 2) == 'S1') {
+                translate = 'ATM OFFUS';
+            } else if (channel.slice(0, 1) == 'O' || channel.slice(0, 2) == '50') {
+                translate = 'EDC';
+            }
+
+            translate = translate ? translate : channel;
+
+            return translate;
+        }
+
+        function translateOpcode(channel, transaction_type) {
+            let type = '';
+
+            if (transaction_type) {
+                type = opcode.find(item => item.code == transaction_type.substr(transaction_type
+                    .length - 5));
+
+                if (!type) {
+                    type = opcode.find(item => item.code == transaction_type.replace(/\s/g, ''));
+                }
+                if (!type) {
+                    type = opcode.find(item => item.code == transaction_type.slice(0, 2));
+                }
+                if (!type) {
+                    type = opcode.find(item => item.code == transaction_type.slice(0, 1));
+                }
+                if (!type) {
+                    type = opcode.find(item => item.code == transaction_type);
+                }
+                type = type ? type.description : transaction_type;
+
+            }
+
+            return type;
+        }
+
+
+        function groupTransaction(transactions) {
+            let result = {
+                tanggal: [],
+                transactions: []
+            }
+
+            if (transactions) {
+                transactions.forEach(item => {
+                    let timestamp = item.rqtimestamp.split(" ")[0];
+                    if (!result.tanggal.find(item2 => item2 == timestamp)) {
+                        result.tanggal.unshift(timestamp)
+                    }
+                })
+
+                result.tanggal.forEach(item => {
+                    result.transactions.unshift(transactions.filter(item2 => item2.rqtimestamp.split(" ")[0] ==
+                        item).length)
+                })
+
+            }
+
+            return result;
+
+
+        }
+
+        function getToday(before = 0) {
+            var today = new Date();
+            var dd = String(today.getDate() - before).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var yyyy = today.getFullYear();
+
+            return yyyy + '-' + mm + '-' + dd;
+        }
+
+
+        function lineTransactionGraph(list) {
+            let chart = groupTransaction(list);
+
+            const ctx = document.getElementById('transaction-chart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chart.tanggal,
+                    datasets: [{
+                        label: 'Total Transaksi 5 Bulan Terakhir',
+                        data: chart.transactions,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Jumlah Transaksi'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '5 Bulan Terakhir'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function lineFraudTransactionGraph(list) {
+            let chart = groupTransaction(list);
+
+            const ctx = document.getElementById('fraud-transaction-chart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chart.tanggal,
+                    datasets: [{
+                        label: 'Total Transaksi Fraud 5 Bulan Terakhir',
+                        data: chart.transactions,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Jumlah Transaksi'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '5 Bulan Terakhir'
+                            }
+                        }
+                    }
+                }
+            });
+
+        }
+
+        function loadTransaction() {
+            var data = {
+                "user_name": "admin",
+                "action": "get_transaction",
+                "start_date": getToday(1),
+                "end_date": getToday(),
+                "channel": "All Channel",
+                "fraud_level": "All Transaction",
+                "limit":"50"
+            };
+
+            $.get(BASE_URL + 'opcode', function (response) {
+                opcode = response;
+            });
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    response = $.parseJSON(response);
+                    if (response.rqtimestamp) {
+                        response.rqtimestamp.forEach((item, index) => {
+                            trx_response.push({
+                                business_cycle: response.business_cycle[index],
+                                stan: response.stan[index],
+                                rqtimestamp: response.rqtimestamp[index],
+                                channel: translateChannel(response.channel[index]),
+                                account_no: response.account_no[index],
+                                transaction_type: translateOpcode(response.channel[index], response
+                                    .transaction_type[index]),
+                                amount: response.amount[index],
+                                rule_id: response.rule_id[index],
+                                fraud_level: response.fraud_level[index]
+                            })
+                        })
+                        transactions = trx_response;
+                    }
+                    lineTransactionGraph(transactions);
+                });
+        }
+
+        function loadFraudTransaction() {
+            var data = {
+                "user_name": "admin",
+                "action": "get_transaction",
+                "start_date": getToday(1),
+                "end_date": getToday(),
+                "channel": "All Channel",
+                "fraud_level": "Fraudulent Only",
+                "limit":"50"
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    response = $.parseJSON(response);
+                    console.log("SUCCESS", response);
+                    if (response.rqtimestamp) {
+                        response.rqtimestamp.forEach((item, index) => {
+                            trx_response.push({
+                                business_cycle: response.business_cycle[index],
+                                stan: response.stan[index],
+                                rqtimestamp: response.rqtimestamp[index],
+                                channel: translateChannel(response.channel[index]),
+                                pan: transactions.pan ? transactions.pan[index] : 0,
+                                account_no: response.account_no[index],
+                                transaction_type: translateOpcode(response.channel[index], response
+                                    .transaction_type[index]),
+                                amount: response.amount[index],
+                                rule_id: response.rule_id[index],
+                                fraud_level: response.fraud_level[index]
+                            })
+                        })
+                        fraudTransactions = trx_response;
+                        $("#table-transaction tbody tr td").remove();
+
+                        fraudTransactions.forEach(item => {
+                            var fraud_level = item.fraud_level;
+
+                            if (item.fraud_level == '0' || item.fraud_level == 'normal') {
+                                item.fraud_level = '';
+                            }
+                            if (item.fraud_level == '1' || item.fraud_level == 'low') {
+                                item.fraud_level =
+                                    '<span style="width: 100px;" class="tag is-warning is-light">LOW</span>';
+                            }
+                            if (item.fraud_level == '2' || item.fraud_level == 'medium') {
+                                item.fraud_level =
+                                    '<span style="width: 100px;" class="tag is-warning">MEDIUM</span>';
+                            }
+                            if (item.fraud_level == '3' || item.fraud_level == 'high') {
+                                var audio = new Audio('assets/bell.mp3');
+                                audio.play();
+                                item.fraud_level =
+                                    '<span style="width: 100px;"  class="tag is-danger">HIGH</span>';
+                            }
+
+                            $('<tr >').append(
+                                $('<td class="transaction">').text(item.rqtimestamp.substring(0, 19)),
+                                $('<td class="transaction">').text(item.channel),
+                                $('<td class="transaction">').text(item.account_no),
+                                $('<td class="transaction">').text(item.pan),
+                                $('<td class="transaction">').text(item.transaction_type),
+                                $('<td class="transaction">').text(item.amount),
+                                $('<td class="transaction">').html('<span class="transaction" style="width:100px">' + item
+                                    .business_cycle + '.' + item.stan + '</span>'),
+                                $('<td class="transaction">').text(item.rule_id),
+                                $('<td class="transaction">').html(item.fraud_level),
+                                $('<td>').html(
+                                    fraud_level ?
+                                    `<div id="assign-${item.stan}" onclick="showModalAssign(${item.stan}, ${item.business_cycle})" class="button"><i class="fa fa-paper-plane"></i></div>` :
+                                    ''
+                                )
+                            ).appendTo('#table-transaction');
+                        })
+
+                        $('.transaction').each(function () {
+                            let selected_column = $(this).closest('tr').find('td:eq(1)').text();
+                            let bc = selected_column.split('.')[0];
+                            let stan = selected_column.split('.')[1];
+
+                            var data = {
+                                user_name: sessionStorage.getItem("user_name"),
+                                action: 'get_transaction_detail',
+                                business_cycle: bc,
+                                stan: stan
+                            };
+
+                            if ($(this).closest('tr').find('td:eq(6)').text().length <= 0) {
+                                $(this).closest('tr').find('td:eq(8)').remove();
+                            }
+
+                            $.post("/backend/fds/", JSON.stringify(data),
+                                function (response) {
+                                    let json = JSON.parse(response);
+                                    if (json.assign_to && json.assign_desc) {
+                                        $(`#assign-${stan}`).html(`
+                                                <small><strong>User:</strong> ${json.assign_to}</small> <br>
+                                                <small><strong>Description:</strong> ${json.assign_desc}</small>
+                                            `);
+                                        $(`#assign-${stan}`).prop('onclick', null).off('click');
+                                        $(`#assign-${stan}`).removeClass('button');
+                                        $(`#assign-${stan}`).prop('style',
+                                            'width: 200px; overflow: auto');
+                                    }
+                                });
+                        });
+
+                    }
+
+                    lineFraudTransactionGraph(fraudTransactions);
+                });
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#sidemenu').load('sidemenu.html');
+            loadUser();
+            loadFraudTransaction();
+            loadTransaction();
+
+            $(document).on('click', '.transaction', function () {
+                let selected_column = $(this).closest('tr').find('td:eq(6)').text();
+                let bc = selected_column.split('.')[0];
+                let stan = selected_column.split('.')[1];
+
+                var data = {
+                    user_name: sessionStorage.getItem("user_name"),
+                    action: 'get_transaction_detail',
+                    business_cycle: bc,
+                    stan: stan
+                };
+
+                $.post("/backend/fds/", JSON.stringify(data),
+                    function (response) {
+                        let json = JSON.parse(response);
+                        $("#transaction_detail").val(JSON.stringify(json, null, 2));
+                        $("#modal-view-transaction").addClass("is-active");
+                    });
+            });
+
+            $(".modal_close").click(function () {
+                $("#modal-view-transaction").removeClass("is-active");
+                $("#modal-assign").removeClass("is-active");
+            });
+
+            function loadParameter() {
+                $.get(BASE_URL + 'rule', function (response) {
+                    charts[0] = response.filter(item => item.status).length;
+
+                    $.get(BASE_URL + 'watchlists', function (response2) {
+                        response2.forEach(item => {
+                            if (item.category == 'WATCHLIST_ACCOUNT') {
+                                charts[1] += 1;
+                            }
+                            if (item.category == 'WATCHLIST_CARD') {
+                                charts[2] += 1;
+                            }
+                            if (item.category == 'BLACKLIST_ACCOUNT') {
+                                charts[3] += 1;
+                            }
+                            if (item.category == 'BLACKLIST_CARD') {
+                                charts[4] += 1;
+                            }
+                            if (item.category == 'TERRORIST_LIST_NAMES') {
+                                charts[5] += 1;
+                            }
+                        })
+
+                        $('#rules-total').text(charts[0]);
+                        $('#watchlist-account-total').text(charts[1]);
+                        $('#watchlist-card-total').text(charts[2]);
+                        $('#blacklist-account-total').text(charts[3]);
+                        $('#blacklist-card-total').text(charts[4]);
+                        $('#terrorist-total').text(charts[5]);
+                    });
+                });
+
+            }
+
+
+            loadParameter()
+        });
+    </script>
+</body>
+
+</html>

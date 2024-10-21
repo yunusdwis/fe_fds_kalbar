@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fraud Management System | Rule</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bulma.min.css" />
+    <link rel="stylesheet" href="css/fontawesome/all.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/dmn/dmn.css">
+    <link rel="stylesheet" href="css/dmn/base-modeler.css">
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/dmn/camunda-platform-modeler.development.js"></script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        input {
+            margin-right: 10px;
+        }
+
+        #modal-new-rule .modal-content {
+            height: 100%;
+            width: 95%;
+        }
+
+        #modal-test-rule .modal-content {
+            height: 100%;
+            width: 800px;
+        }
+
+        #modal-new-rule .modal-content .modal-card-body {
+            height: 85%;
+            margin: 0;
+        }
+
+        .tag {
+            width: 100px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="modal-new-rule" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Rule Designer [<span id="edit_mode"></span>]</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="columns">
+                    <div class="column is-three-quarters">
+                        <div class="editor-container"></div>
+                        <div class="editor-tabs"></div>
+                    </div>
+                    <div class="column">
+                        <div class="control">
+                            <div class="select is-fullwidth mb-2">
+                                <select id="fds-parameter" onchange="getParamValue()">
+                                    <option>Select Parameter</option>
+                                </select>
+                            </div>
+                            <div class="select is-fullwidth mb-2">
+                                <select id="fds-fraudlevel" onchange="getFraudLevelValue()">
+                                    <option>Select Fraud Level</option>
+                                    <option>normal</option>
+                                    <option>low</option>
+                                    <option>medium</option>
+                                    <option>high</option>
+                                </select>
+                            </div>
+                            <div class="select is-fullwidth mb-2">
+                                <select id="fds-action" onchange="getActionValue()">
+                                    <option>Select Action</option>
+                                    <option>flag</option>
+                                    <option>block</option>
+                                    <option>alert_customer_email</option>
+                                    <option>alert_customer_sms</option>
+                                    <option>alert_customer_whatsapp</option>
+                                    <option>alert_officer_email</option>
+                                    <option>alert_officer_sms</option>
+                                    <option>alert_officer_whatsapp</option>
+                                    <option>add_to_watchlist</option>
+                                    <option>add_to_blacklist</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="properties"></div>
+                    </div>
+                </div>
+                <button id="button_save_rule" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>Save</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-select-channel" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Select Channel for [<span id="rule_id_channel"></span>]</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+
+                <div class="container mb-4 p-4">
+                    <label class="checkbox m-2"><input id="channel_atm" type="checkbox">ATM</label><br>
+                    <label class="checkbox m-2"><input id="channel_mb" type="checkbox">Mobile Banking (MB)</label><br>
+                    <label class="checkbox m-2"><input id="channel_ib" type="checkbox">CMS-INTERNET BANKING</label><br>
+                    <label class="checkbox m-2"><input id="channel_network" type="checkbox">Network (ATMB, ALTO, Rintis,
+                        GPN)</label><br>
+                    <label class="checkbox m-2"><input id="channel_teller" type="checkbox">Teller</label><br>
+                    <label class="checkbox m-2"><input id="channel_esb" type="checkbox">ESB</label><br>
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button id="button_save_channel" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>Save</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-delete-rule" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Confirm Rule Deletion</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="container mb-4 p-4">
+                    Are you sure your want to delete rule <span class="has-text-weight-bold is-size-4"
+                        id="rule_id_tobe_deleted"></span> ?
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button id="button_delete_rule" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>OK</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-approve-rule" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Confirm Approve Rule</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="container mb-4 p-4">
+                    Are you sure your want to approve this rule ?
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button id="button_approve_rule" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>OK</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-reject-rule" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Confirm Reject Rule</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="container mb-4 p-4">
+                    Are you sure your want to reject this rule ?
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button id="button_reject_rule" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>OK</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-test-rule" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Test Rule [<span id="rule_id_to_test"></span>]</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="container mb-4 p-4">
+                    <div id="test_fields"></div>
+                    <div class="field mt-6">
+                        <p class="control">
+                            <label class="has-text-weight-bold">Evaluation Result</label>
+                            <textarea id="evaluation_result" class="textarea"
+                                placeholder="Evaluation result will be shown here"></textarea>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button id="button_test_rule" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>Evaluate</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Close</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="columns m-0">
+        <div id="sidemenu" class="column is-narrow fds-sidemenu" style="width: 250px;">
+        </div>
+        <div class="column m-1" style="background-color: #f4fbff;">
+            <div class="container">
+                <p class="panel-heading has-text-white" style="background: rgb(5, 68, 104)">Rules</p>
+                <div class="control mt-5 mb-5">
+                    <button id="button-new-rule" class="button fds-background-dark d-none">New Rule</button>
+                </div>
+                <table id="table-rule" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
+                    <thead>
+                        <tr>
+                            <th>Rule ID</th>
+                            <th>Rule Description</th>
+                            <th>Channel</th>
+                            <th>Status</th>
+                            <th>Creation Status</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        var rule_id;
+        var protocol = location.protocol;
+        var slashes = protocol.concat("//");
+        var host = slashes.concat(window.location.host);
+
+        // or as you probably should do
+        var host = location.protocol.concat("//").concat(window.location.host);
+        const BASE_URL = host + "/backend/3000/";
+        // const xml_template = '<?xml version="1.0" encoding="UTF-8"?> <definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="FR_Template" name="RuleTemplate" namespace="http://camunda.org/schema/1.0/dmn"> <decision id="fraud_level" name="fraud_level"> <decisionTable id="DecisionTable_140ulb5" hitPolicy="FIRST"> <input id="InputClause_0aij2nk"> <inputExpression id="LiteralExpression_0jilnyn" typeRef="boolean"> <text></text> </inputExpression> </input> <output id="OutputClause_19fqhds" name="fraud_level" typeRef="string" /> <output id="OutputClause_0jcqbu7" name="action" typeRef="string" /> </decisionTable> </decision> <dmndi:DMNDI> <dmndi:DMNDiagram id="DMNDiagram_1oqjxy2"> <dmndi:DMNShape id="DMNShape_0eax030" dmnElementRef="fraud_level"> <dc:Bounds height="80" width="180" x="160" y="80" /> </dmndi:DMNShape> </dmndi:DMNDiagram> </dmndi:DMNDI> </definitions>';
+        const xml_template =
+            '<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" id="FR_Template" name="RuleTemplate" namespace="http://camunda.org/schema/1.0/dmn"><decision id="fraud_level" name="fraud_level"><informationRequirement id="InformationRequirement_1pmvwvl"><requiredDecision href="#rule_condition" /></informationRequirement><decisionTable id="DecisionTable_140ulb5" hitPolicy="FIRST"><input id="InputClause_0aij2nk" label="rule_condition" camunda:inputVariable="rule_condition"><inputExpression id="LiteralExpression_0jilnyn" typeRef="boolean"><text>rule_condition</text></inputExpression></input><output id="OutputClause_19fqhds" name="fraud_level" typeRef="string" /><output id="OutputClause_0jcqbu7" name="action" typeRef="string" /><rule id="DecisionRule_1d72qu5"><description>When rule condition is satisfied</description><inputEntry id="UnaryTests_0sw6rhy"><text>true</text></inputEntry><outputEntry id="LiteralExpression_1ru4lfj"><text>""</text></outputEntry><outputEntry id="LiteralExpression_11ormo1"><text>""</text></outputEntry></rule><rule id="DecisionRule_083zbyi"><description>When rule condition is not satisfied</description><inputEntry id="UnaryTests_0b6zqvo"><text>false</text></inputEntry><outputEntry id="LiteralExpression_1ohf7kq"><text>""</text></outputEntry><outputEntry id="LiteralExpression_0imulrm"><text>""</text></outputEntry></rule></decisionTable></decision><inputData id="RULE_PARAMETER" name="RULE_PARAMETER" /><decision id="rule_condition" name="rule_condition"><variable id="InformationItem_0bi185k" name="rule_condition" typeRef="boolean" /><informationRequirement id="InformationRequirement_0x7bkt4"><requiredInput href="#RULE_PARAMETER" /></informationRequirement><literalExpression id="LiteralExpression_13risvh" /></decision><dmndi:DMNDI><dmndi:DMNDiagram id="DMNDiagram_1oqjxy2"><dmndi:DMNShape id="DMNShape_0eax030" dmnElementRef="fraud_level"><dc:Bounds height="80" width="180" x="161" y="80" /></dmndi:DMNShape><dmndi:DMNShape id="DMNShape_1lolygr" dmnElementRef="RULE_PARAMETER"><dc:Bounds height="45" width="125" x="188" y="328" /></dmndi:DMNShape><dmndi:DMNShape id="DMNShape_06vf5xw" dmnElementRef="rule_condition"><dc:Bounds height="80" width="180" x="161" y="200" /></dmndi:DMNShape><dmndi:DMNEdge id="DMNEdge_0g1bu8s" dmnElementRef="InformationRequirement_1pmvwvl"><di:waypoint x="251" y="200" /><di:waypoint x="251" y="180" /><di:waypoint x="251" y="160" /></dmndi:DMNEdge><dmndi:DMNEdge id="DMNEdge_1reg4sj" dmnElementRef="InformationRequirement_0x7bkt4"><di:waypoint x="251" y="328" /><di:waypoint x="251" y="300" /><di:waypoint x="251" y="280" /></dmndi:DMNEdge></dmndi:DMNDiagram></dmndi:DMNDI></definitions>';
+        const $container = $('.editor-container');
+        const $tabs = $('.editor-tabs');
+
+        const CLASS_NAMES = {
+            drd: 'dmn-icon-lasso-tool',
+            decisionTable: 'dmn-icon-decision-table',
+            literalExpression: 'dmn-icon-literal-expression'
+        };
+
+        const dmnModeler = new DmnModeler({
+            container: $container,
+            height: '55vh',
+            drd: {
+                propertiesPanel: {
+                    parent: '#properties'
+                }
+            },
+            keyboard: {
+                bindTo: window
+            }
+        });
+
+        function updateRuleStatus(rule_id, status) {
+            let data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'update_rule_status',
+                rule_id: rule_id,
+                status: status
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function () {
+                    loadRules();
+                });
+        }
+
+        function openChannelSelection(obj) {
+            let rule_id = obj.closest('tr').find('td:eq(0)').text();
+            let channel = obj.closest('tr').find('td:eq(2)').text();
+
+            $('#rule_id_channel').val(rule_id);
+            $('#rule_id_channel').text(rule_id);
+
+            if (channel.includes('ATM'))
+                $('#channel_atm').prop('checked', true);
+            else
+                $('#channel_atm').prop('checked', false);
+
+            if (channel.includes('MB'))
+                $('#channel_mb').prop('checked', true);
+            else
+                $('#channel_mb').prop('checked', false);
+
+            if (channel.includes('IB'))
+                $('#channel_ib').prop('checked', true);
+            else
+                $('#channel_ib').prop('checked', false);
+
+            if (channel.includes('NETWORK'))
+                $('#channel_network').prop('checked', true);
+            else
+                $('#channel_network').prop('checked', false);
+
+            if (channel.includes('TELLER'))
+                $('#channel_teller').prop('checked', true);
+            else
+                $('#channel_teller').prop('checked', false);
+
+            if (channel.includes('ESB'))
+                $('#channel_esb').prop('checked', true);
+            else
+                $('#channel_esb').prop('checked', false);
+
+            loadRules();
+            $("#modal-select-channel").addClass("is-active");
+        }
+
+        function getFraudLevelValue() {
+            var selectedValue = $('#fds-fraudlevel').val();
+            copyToClipboard(selectedValue);
+        }
+
+        function getParamValue() {
+            var selectedValue = $('#fds-parameter').val();
+            copyToClipboard(selectedValue);
+        }
+
+        function getActionValue() {
+            var selectedValue = $('#fds-action').val();
+            copyToClipboard(selectedValue);
+        }
+
+        function ruleAction() {
+            var firstColumnValue = $(this).data('customData');
+            alert(firstColumnValue);
+        }
+
+        function copyToClipboard(text) {
+            var sampleTextarea = document.createElement("textarea");
+            document.body.appendChild(sampleTextarea);
+            sampleTextarea.value = text; //save main text in it
+            sampleTextarea.select(); //select textarea contenrs
+            document.execCommand("copy");
+            document.body.removeChild(sampleTextarea);
+        }
+
+        async function showDiagram(dmnXML) {
+            if (dmnXML === '') {
+                dmnXML = xml_template;
+            }
+
+            const {
+                xml
+            } = await dmnModeler.importXML(dmnXML);
+            const activeEditor = await dmnModeler.getActiveViewer();
+            const canvas = await activeEditor.get('canvas');
+            canvas.zoom('fit-viewport', 'auto');
+        }
+
+        async function exportDiagram() {
+            const {
+                xml
+            } = await dmnModeler.saveXML({
+                format: true
+            });
+            copyToClipboard(xml);
+
+            let parser = new DOMParser();
+            let xmlDoc = parser.parseFromString(xml, 'text/xml');
+            let rootElement = xmlDoc.getElementsByTagName('definitions')[0];
+            let id = rootElement.getAttribute('id');
+            let name = rootElement.getAttribute('name');
+            let action = $("#edit_mode").text() === 'NEW' ? 'create_rule' : 'update_rule_definition';
+
+            let data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: action,
+                rule_id: id,
+                rule_description: name,
+                rule_definition: xml
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function () {
+                    loadRules();
+                });
+        }
+
+        function loadRules() {
+            var data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'get_rule'
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    var status = [
+                        `<span class="tag is-danger">Disabled</span>`,
+                        `<span class="tag is-success">Enabled</span>`,
+                        `<span class="tag is-warning">Evaluation only</span>`
+                    ];
+                    var trx_response = $.parseJSON(response);
+
+                    $("#table-rule tbody tr td").remove();
+
+                    for (i = 0; i < trx_response.rule_id.length; i++) {
+                        let all_channel = trx_response.rule_channel[i];
+                        let channel = all_channel.substring(0, 1) === '1' ? 'ATM' : '';
+                        channel += all_channel.substring(1, 2) === '1' ? ' MB' : '';
+                        channel += all_channel.substring(2, 3) === '1' ? ' IB' : '';
+                        channel += all_channel.substring(3, 4) === '1' ? ' NETWORK' : '';
+                        channel += all_channel.substring(4, 5) === '1' ? ' TELLER' : '';
+                        channel += all_channel.substring(5, 6) === '1' ? ' ESB' : '';
+
+                        let action;
+                        let role_id = parseInt(sessionStorage.getItem('role_id'));
+
+                        // <div class="dropdown rule_menu"><div class="dropdown-trigger"><button class="button" aria-haspopup="true" aria-controls="dropdown-menu"><span>Setting</span><span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span></button></div><div class="dropdown-menu" id="rule-menu" role="menu"><div class="dropdown-content"><a id="rule_menu_enable" class="dropdown-item">Enable</a><a id="rule_menu_disable"  class="dropdown-item">Disable</a><a id="rule_menu_evaluation_only"  class="dropdown-item">Evaluation Only</a><hr class="dropdown-divider">              <a id="rule_menu_channel" class="dropdown-item">Set Channel</a><hr class="dropdown-divider">            <a id="rule_menu_test" class="dropdown-item">Test</a><hr class="dropdown-divider"><a id="rule_menu_delete" class="dropdown-item">Delete</a><a id="rule_menu_edit" class="dropdown-item">Edit</a></div></div></div>
+                        switch (role_id) {
+                            case 1:
+                                $('#button-new-rule').removeClass('d-none');
+                                action = `<div class="dropdown rule_menu">
+                                                    <div class="dropdown-trigger">
+                                                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                            <span>Setting</span>
+                                                            <span class="icon is-small">
+                                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="dropdown-menu" id="rule-menu" role="menu">
+                                                        <div class="dropdown-content">
+                                                            <a id="rule_menu_approve" class="dropdown-item">Approve</a>
+                                                            <hr class="dropdown-divider">
+                                                            <a id="rule_menu_delete" class="dropdown-item">Delete</a>
+                                                            <a id="rule_menu_edit" class="dropdown-item">Edit</a>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
+                                if (parseInt(trx_response.creation_status[i]) != 0) {
+                                    action = '';
+                                }
+                                break;
+                            case 2:
+                                action = `<div class="dropdown rule_menu">
+                                                    <div class="dropdown-trigger">
+                                                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                            <span>Setting</span>
+                                                            <span class="icon is-small">
+                                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="dropdown-menu" id="rule-menu" role="menu">
+                                                        <div class="dropdown-content">
+                                                            <a id="rule_menu_channel" class="dropdown-item">Set Channel</a>
+                                                            <hr class="dropdown-divider">
+                                                            <a id="rule_menu_test" class="dropdown-item">Test</a>
+                                                            <hr class="dropdown-divider">
+                                                            <a id="rule_menu_approve" class="dropdown-item">Approve</a>
+                                                            <a id="rule_menu_reject" class="dropdown-item">Reject</a>
+                                                            <hr class="dropdown-divider">
+                                                            <a id="rule_menu_delete" class="dropdown-item">Delete</a>
+                                                            <a id="rule_menu_edit" class="dropdown-item">Edit</a>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
+                                if (parseInt(trx_response.creation_status[i]) != 1) {
+                                    action = '';
+                                }
+                                break;
+                            case 3:
+                                action = `
+                                    <div class="dropdown rule_menu">
+                                            <div class="dropdown-trigger">
+                                                <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                    <span>Setting</span>
+                                                    <span class="icon is-small">
+                                                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                            <div class="dropdown-menu" id="rule-menu" role="menu">
+                                                <div class="dropdown-content">
+                                                    <a id="rule_menu_channel" class="dropdown-item">Set Channel</a>
+                                                    <hr class="dropdown-divider">
+                                                    <a id="rule_menu_test" class="dropdown-item">Test</a>
+                                                    <hr class="dropdown-divider">
+                                                    <a id="rule_menu_approve" class="dropdown-item">Approve</a>
+                                                    <a id="rule_menu_reject" class="dropdown-item">Reject</a>
+                                                    <hr class="dropdown-divider">
+                                                    <a id="rule_menu_delete" class="dropdown-item">Delete</a>
+                                                    <a id="rule_menu_edit" class="dropdown-item">Edit</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                if (parseInt(trx_response.creation_status[i]) == 3) {
+                                    action = `<div class="dropdown rule_menu">
+                                            <div class="dropdown-trigger">
+                                                <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                                    <span>Setting</span>
+                                                    <span class="icon is-small">
+                                                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                            <div class="dropdown-menu" id="rule-menu" role="menu">
+                                                <div class="dropdown-content">
+                                                    <a id="rule_menu_enable" class="dropdown-item">Enable</a>
+                                                    <a id="rule_menu_disable" class="dropdown-item">Disable</a>
+                                                    <a id="rule_menu_evaluation_only" class="dropdown-item">Evaluation Only</a>
+                                                    <hr class="dropdown-divider">
+                                                    <a id="rule_menu_channel" class="dropdown-item">Set Channel</a>
+                                                    <hr class="dropdown-divider">
+                                                    <a id="rule_menu_test" class="dropdown-item">Test</a>
+                                                    <hr class="dropdown-divider">
+                                                    <a id="rule_menu_delete" class="dropdown-item">Delete</a>
+                                                    <a id="rule_menu_edit" class="dropdown-item">Edit</a>
+                                                </div>
+                                            </div>
+                                        </div>`;
+                                }
+                                if (parseInt(trx_response.creation_status[i]) < 2) {
+                                    action = '';
+                                }
+                                break;
+                            default:
+                                action =
+                                    '<div class="dropdown rule_menu"><div class="dropdown-trigger"><button class="button" aria-haspopup="true" aria-controls="dropdown-menu"><span>Setting</span><span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span></button></div><div class="dropdown-menu" id="rule-menu" role="menu"><div class="dropdown-content"><a id="rule_menu_enable" class="dropdown-item">Enable</a><a id="rule_menu_disable"  class="dropdown-item">Disable</a><a id="rule_menu_evaluation_only"  class="dropdown-item">Evaluation Only</a><hr class="dropdown-divider">            <a id="rule_menu_channel" class="dropdown-item">Set Channel</a><hr class="dropdown-divider">           <a id="rule_menu_test" class="dropdown-item">Test</a><hr class="dropdown-divider"><a id="rule_menu_delete" class="dropdown-item">Delete</a><a id="rule_menu_edit" class="dropdown-item">Edit</a></div></div></div>';
+                        }
+
+
+
+                        let creation_status;
+                        switch (parseInt(trx_response.creation_status[i])) {
+                            case 0:
+                                creation_status = `<span class="has-text-warning"><b>Maker Evaluation</b></span>`;
+                                break;
+                            case 1:
+                                creation_status = `<span class="has-text-warning"><b>Checker Evaluation</b></span>`;
+                                break;
+                            case 2:
+                                creation_status = `<span class="has-text-warning"><b>Approver Evaluation</b></span>`;
+                                break;
+                            case 3:
+                                creation_status = `<span class="has-text-success"><b>Ready</b></span>`;
+                                break;
+                        }
+
+                        $('<tr>').append(
+                            $('<td>').html('<span class="button rule_id" style="width:100px">' + trx_response
+                                .rule_id[i] + '</span>'),
+                            $('<td>').text(trx_response.rule_description[i]),
+                            $('<td class="rule_channel">').text(channel),
+                            $('<td>').html(status[trx_response.status[i]]),
+                            $('<td>').html(creation_status),
+                            $('<td>').html(action)
+                        ).appendTo('#table-rule');
+                    }
+                });
+        }
+
+        function loadParameterRule() {
+            var data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'get_parameter_rule'
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    var trx_response = $.parseJSON(response);
+
+                    for (i = 0; i < trx_response.param_name.length; i++) {
+                        $('#fds-parameter').append('<option>' + trx_response.param_name[i] + '</option>');
+                    }
+                });
+        }
+
+        function openDiagram(rule_id) {
+            let data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'get_rule_definition',
+                data: rule_id
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    $("#edit_mode").text('EDIT');
+                    $("#modal-new-rule").addClass("is-active");
+                    showDiagram(response);
+                });
+        }
+
+        $(document).ready(function () {
+            $('#sidemenu').load('sidemenu.html');
+
+            loadRules();
+            loadParameterRule();
+        });
+
+        $tabs.delegate('.tab', 'click', async function (e) {
+            const viewIdx = parseInt(this.getAttribute('data-id'), 10);
+            const view = dmnModeler.getViews()[viewIdx];
+            dmnModeler.open(view);
+        });
+
+        dmnModeler.on('views.changed', function (event) {
+            const {
+                views,
+                activeView
+            } = event;
+            $tabs.empty();
+            views.forEach(function (v, idx) {
+                const className = CLASS_NAMES[v.type];
+                const tab = $(
+                    `<div class="tab ${ v === activeView ? 'active' : ''}" data-id="${idx}"><span class="${ className }"></span>${v.element.name || v.element.id}</div>`
+                );
+                $tabs.append(tab);
+            });
+        });
+
+        $("#button-new-rule").click(function () {
+            $("#edit_mode").text('NEW');
+            $("#modal-new-rule").addClass("is-active");
+            showDiagram(xml_template);
+        });
+
+        $(".modal_close").click(function () {
+            $("#modal-new-rule").removeClass("is-active");
+            $("#modal-select-channel").removeClass("is-active");
+            $("#modal-delete-rule").removeClass("is-active");
+            $("#modal-test-rule").removeClass("is-active");
+        });
+
+        $(document).on('click', '#button_save_rule', function () {
+            exportDiagram();
+            loadRules();
+            $("#modal-new-rule").removeClass("is-active");
+        });
+
+        $(document).on('click', '#button_save_channel', function () {
+            let rule_id = $('#rule_id_channel').val();
+
+            let data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'update_rule_channel',
+                rule_id: rule_id,
+                channel_atm: $('#channel_atm').is(':checked'),
+                channel_mb: $('#channel_mb').is(':checked'),
+                channel_ib: $('#channel_ib').is(':checked'),
+                channel_network: $('#channel_network').is(':checked'),
+                channel_teller: $('#channel_teller').is(':checked'),
+                channel_esb: $('#channel_esb').is(':checked')
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function () {
+                    loadRules();
+                });
+
+            $("#modal-select-channel").removeClass("is-active");
+        });
+
+        $(document).on('click', '.rule_channel', function () {
+            openChannelSelection($(this));
+        });
+
+        $(document).on('click', '.rule_id', function () {
+            var selected_rule = $(this).closest('tr').find('td:eq(0)').text();
+            openDiagram(selected_rule);
+        });
+
+        $(document).on('click', '#rule_menu_enable', function () {
+            let rule_id = $(this).closest('tr').find('td:eq(0)').text();
+            updateRuleStatus(rule_id, 'Enable');
+        });
+
+        $(document).on('click', '#rule_menu_disable', function () {
+            let rule_id = $(this).closest('tr').find('td:eq(0)').text();
+            updateRuleStatus(rule_id, 'Disable');
+        });
+
+        $(document).on('click', '#rule_menu_evaluation_only', function () {
+            let rule_id = $(this).closest('tr').find('td:eq(0)').text();
+            updateRuleStatus(rule_id, 'Evaluation Only');
+        });
+
+        $(document).on('click', '#rule_menu_delete', function () {
+            let rule_id = $(this).closest('tr').find('td:eq(0)').text();
+            $('#rule_id_tobe_deleted').text(rule_id);
+            $("#modal-delete-rule").addClass("is-active");
+        });
+
+
+        $(document).on('click', '#rule_menu_channel', function () {
+            openChannelSelection($(this));
+        });
+
+        $(document).on('click', '#rule_menu_edit', function () {
+            let rule_id = $(this).closest('tr').find('td:eq(0)').text();
+            openDiagram(rule_id)
+            loadRules();
+        });
+
+        $(document).on('click', '#rule_menu_approve', function () {
+            rule_id = $(this).closest('tr').find('td:eq(0)').text();
+            $("#modal-approve-rule").addClass("is-active");
+        });
+
+        $(document).on('click', '#button_approve_rule', function () {
+            let role_id = parseInt(sessionStorage.getItem('role_id'));
+            let status;
+
+            switch (role_id) {
+                case 1:
+                    status = 1;
+                    break;
+                case 2:
+                    status = 2;
+                    break;
+                case 3:
+                    status = 3;
+                    break;
+            }
+
+            var data = {};
+
+            $.post(BASE_URL + "rules/set-status/" + rule_id + "/" + status, JSON.stringify(data),
+                function (response) {
+                    loadRules();
+                    $("#modal-approve-rule").removeClass("is-active");
+                });
+        });
+
+        $(document).on('click', '#rule_menu_reject', function () {
+            rule_id = $(this).closest('tr').find('td:eq(0)').text();
+            $("#modal-reject-rule").addClass("is-active");
+        });
+
+        $(document).on('click', '#button_reject_rule', function () {
+            let role_id = parseInt(sessionStorage.getItem('role_id'));
+            let status;
+
+            switch (role_id) {
+                case 2:
+                    status = 0;
+                    break;
+                case 3:
+                    status = 1;
+                    break;
+            }
+
+            var data = {};
+
+            $.post(BASE_URL + "rules/set-status/" + rule_id + "/" + status, JSON.stringify(data),
+                function (response) {
+                    loadRules();
+                    $("#modal-reject-rule").removeClass("is-active");
+                });
+        });
+
+        $(document).on('click', '#rule_menu_test', function () {
+            $('#test_fields').empty();
+            $('#evaluation_result').val('');
+
+            let rule_id = $(this).closest('tr').find('td:eq(0)').text();
+
+            var data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'get_rule_variables',
+                data: rule_id
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    let trx_response = $.parseJSON(response);
+                    for (i = 0; i < trx_response.length; i++) {
+                        let vars = trx_response[i];
+                        let key = Object.keys(vars)[0];
+                        let value = vars[key];
+                        $('#test_fields').append('<label id="' + key +
+                            '" class="test_field_names has-text-weight-bold">' + key + '</label>');
+                        $('#test_fields').append('<input class="input test_field_values" value="' + value +
+                            '">');
+                    }
+
+                    $('#rule_id_to_test').text(rule_id);
+                    $("#modal-test-rule").addClass("is-active");
+                    loadRules();
+                });
+        });
+
+        $(document).on('click', '#button_delete_rule', function () {
+            let rule_id = $('#rule_id_tobe_deleted').text();
+            updateRuleStatus(rule_id, 'Delete');
+            $("#modal-delete-rule").removeClass("is-active");
+        });
+
+        $(document).on('click', '#button_test_rule', function () {
+            let values = [];
+            let test_data_names = $(".test_field_names");
+            let test_data_values = $(".test_field_values");
+
+            $('#evaluation_result').val('Evaluating...');
+
+            for (var i = 0; i < test_data_names.length; i++) {
+                values.push({
+                    field: test_data_names.eq(i).text(),
+                    value: test_data_values.eq(i).val()
+                });
+            }
+
+            let data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'evaluate_rule',
+                rule_id: $('#rule_id_to_test').text(),
+                values: values
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    let json = JSON.parse(response);
+                    $('#evaluation_result').val(JSON.stringify(json, null, 2));
+                });
+        });
+
+        $(document).on('click', '.rule_menu', function () {
+            $(this).toggleClass('is-active');
+        });
+
+        $(document).click(function (event) {
+            var target = $(event.target);
+            if (!target.closest('.rule_menu').length) {
+                $('.rule_menu').removeClass('is-active');
+            }
+        });
+    </script>
+</body>
+
+</html>

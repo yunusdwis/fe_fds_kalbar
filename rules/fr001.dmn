@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="fr001_simultaneous_trx" name="Simultaneous Transaction" namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="exceeds_minimum_interval" name="exceeds_minimum_interval">
+    <variable id="InformationItem_0ehxfc0" name="exceeds_minimum_interval" typeRef="boolean" />
+    <informationRequirement id="InformationRequirement_0ek1v0l">
+      <requiredInput href="#ATM_DISTANCE_WITH_LAST_TRANSACTION" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_19sa6n7">
+      <requiredInput href="#ATM_INTERVAL_WITH_LAST_TRANSACTION" />
+    </informationRequirement>
+    <informationRequirement id="InformationRequirement_0pwhrae">
+      <requiredInput href="#THRESHOLD_ATM_MINIMUM_TRAVEL_DURATION" />
+    </informationRequirement>
+    <literalExpression id="LiteralExpression_1ywsz3w">
+      <text>ATM_INTERVAL_WITH_LAST_TRANSACTION &gt; (ATM_DISTANCE_WITH_LAST_TRANSACTION * THRESHOLD_ATM_MINIMUM_TRAVEL_DURATION)</text>
+    </literalExpression>
+  </decision>
+  <decision id="fraud_level" name="fraud_level">
+    <informationRequirement id="InformationRequirement_1ele22z">
+      <requiredDecision href="#exceeds_minimum_interval" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_140ulb5" hitPolicy="FIRST">
+      <input id="InputClause_0aij2nk" camunda:inputVariable="exceeds_minimum_interval">
+        <inputExpression id="LiteralExpression_0jilnyn" typeRef="boolean">
+          <text>exceeds_minimum_interval</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_19fqhds" name="fraud_level" typeRef="string" />
+      <output id="OutputClause_0hudj8e" name="response_code" typeRef="string" />
+      <output id="OutputClause_0jcqbu7" name="action" typeRef="string" />
+      <rule id="DecisionRule_0kvy2gt">
+        <inputEntry id="UnaryTests_0lwij9r">
+          <text>true</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0o5wo31">
+          <text>"normal"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0ro05lo">
+          <text>"00"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0utpdbn">
+          <text>""</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_06ifddi">
+        <inputEntry id="UnaryTests_1x0wbiz">
+          <text>false</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1rywenr">
+          <text>"high"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_10nymcs">
+          <text>"05"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_066sqrz">
+          <text>"flag alert_customer alert_officer block"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <inputData id="THRESHOLD_ATM_MINIMUM_TRAVEL_DURATION" name="THRESHOLD_ATM_MINIMUM_TRAVEL_DURATION" />
+  <inputData id="ATM_DISTANCE_WITH_LAST_TRANSACTION" name="ATM_DISTANCE_WITH_LAST_TRANSACTION" />
+  <inputData id="ATM_INTERVAL_WITH_LAST_TRANSACTION" name="ATM_INTERVAL_WITH_LAST_TRANSACTION" />
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_1oqjxy2">
+      <dmndi:DMNShape id="DMNShape_0h4yeze" dmnElementRef="exceeds_minimum_interval">
+        <dc:Bounds height="80" width="180" x="300" y="220" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_0eax030" dmnElementRef="fraud_level">
+        <dc:Bounds height="80" width="180" x="300" y="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_0bfqjzl" dmnElementRef="InformationRequirement_1ele22z">
+        <di:waypoint x="390" y="220" />
+        <di:waypoint x="390" y="180" />
+        <di:waypoint x="390" y="160" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNShape id="DMNShape_0ppuz8l" dmnElementRef="THRESHOLD_ATM_MINIMUM_TRAVEL_DURATION">
+        <dc:Bounds height="45" width="125" x="497" y="337" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_0rfamqw" dmnElementRef="ATM_DISTANCE_WITH_LAST_TRANSACTION">
+        <dc:Bounds height="45" width="125" x="157" y="337" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_1gsirjp" dmnElementRef="ATM_INTERVAL_WITH_LAST_TRANSACTION">
+        <dc:Bounds height="45" width="125" x="327" y="337" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_0qwpr2o" dmnElementRef="InformationRequirement_0ek1v0l">
+        <di:waypoint x="220" y="337" />
+        <di:waypoint x="345" y="320" />
+        <di:waypoint x="345" y="300" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_1gtho3l" dmnElementRef="InformationRequirement_19sa6n7">
+        <di:waypoint x="390" y="337" />
+        <di:waypoint x="390" y="320" />
+        <di:waypoint x="390" y="300" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="DMNEdge_0etuq8v" dmnElementRef="InformationRequirement_0pwhrae">
+        <di:waypoint x="560" y="337" />
+        <di:waypoint x="435" y="320" />
+        <di:waypoint x="435" y="300" />
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
+

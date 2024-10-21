@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fraud Detection System - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bulma.min.css" />
+    <link rel="stylesheet" href="css/fontawesome/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+    <script src="js/jquery.min.js"></script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="columns m-0" style="height: 100%">
+
+        <div class="column" style="height:100%;background-color: rgb(5, 68, 104)">
+            <nav class="level" style="height:100%">
+                <div class="container p-6">
+                    <center>
+                        <p class="title is-italic is-3" style="color: rgb(241, 237, 237)">The implementation of an
+                            effective <b><u>Fraud Detection System</u></b> is crucial for businesses and organizations
+                            as it helps to prevent financial losses, protect customer information, maintain regulatory
+                            compliance, and preserve the reputation and trust of the organization and its stakeholders.
+                        </p>
+                    </center>
+                </div>
+            </nav>
+        </div>
+
+        <div class="column" style="background-color: #f4fbff">
+            <nav class="level" style="height:100%">
+                <div class="container p-6">
+                    <center>
+                        <figure class="image mb-6">
+                            <img src="img/bank_kalbar_transparent.png" alt="profile_picture">
+                        </figure>
+                        <figure class="image is-128x128 mb-6">
+                            <img class="is-rounded" src="img/avatar1.jpg" alt="profile_picture">
+                        </figure>
+                    </center>
+                    <div class="field">
+                        <p class="control has-icons-left">
+                            <input id="user_name" onchange="checkUsername()" class="input" type="text"
+                                placeholder="Username">
+                            <span class="icon is-left">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="field">
+                        <p class="control has-icons-left">
+                            <input id="user_password" class="input" type="password" placeholder="Password">
+                            <span class="icon is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="field">
+                        <p class="control">
+                            <button id="button_login" class="button is-success"
+                                style="width:100%;background: rgb(5, 68, 104)">
+                                Login
+                            </button>
+                        </p>
+                    </div>
+                    <div class="container has-text-centered mt-5 mb-4">
+                        <span>&#169; 2023 APLINK</span>
+                    </div>
+                    <div id="message_box" class="notification is-danger is-hidden">
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        function checkUsername() {
+            $('#user_name').val($('#user_name').val().toUpperCase());
+            $('#user_name').val($('#user_name').val().replace(/\s/g, ''));
+        }
+
+        function submitLogin() {
+            let data = {
+                action: 'user_login',
+                user_name: $('#user_name').val(),
+                password: $('#user_password').val()
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    let resp = $.parseJSON(response);
+                    if (resp.resp_code === '00') {
+                        sessionStorage.setItem("user_name", $("#user_name").val());
+                        sessionStorage.setItem("role_id", resp.role_id);
+                        sessionStorage.setItem("token", resp.token);
+                        sessionStorage.setItem("password", $("#user_password").val());
+                        document.cookie = "user_name".concat("=", $("#username").val());
+                        window.location = sessionStorage.getItem("password") != "12345678" ?
+                            "dashboard.html" : "change_password.html";
+                        return;
+                    }
+
+                    $('#message_box').text(resp.resp_description);
+                    $('#message_box').removeClass("is-hidden");
+                });
+        }
+        $(document).ready(function () {
+            $("#button_login").click(function () {
+                submitLogin();
+            });
+        });
+
+        $(".input").on('keyup', function (e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                submitLogin();
+            }
+        });
+    </script>
+</body>
+
+</html>

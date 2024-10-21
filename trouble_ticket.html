@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Fraud Management System</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/bulma.min.css" />
+        <link rel="stylesheet" href="css/fontawesome/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="css/styles.css" />
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+        <script src="js/jquery.min.js"></script>
+        <script src="js/util.js"></script>
+
+        <style>
+            html, body {
+                height: 100%;
+            }
+        </style>
+
+    </head>
+
+    <body>
+        <div id="modal-new-ticket" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head fds-background-dark">
+                    <p class="modal-card-title has-text-white">New Ticket</p>
+                    <button class="modal_close delete" aria-label="close"></button>
+                </header>
+                <div class="modal-card-body">
+                    <div class="content">
+                        <div class="container">
+                            <div class="field">
+                                <p class="control">
+                                    <label>Subject</label>
+                                    <input class="input" type="text" placeholder="Summary of the problem">
+                                </p>
+                            </div>
+                            <div class="field">
+                                <p class="control has-icons-left">
+                                    <label>Problem Description</label>
+                                    <textarea class="textarea" placeholder="Describe your problem here"></textarea>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="modal-card-foot">
+                    <button id="button_save_rule" class="button is-success"><span class="icon is-small"><i class="fas fa-check"></i></span><span>Save</span></button>
+                    <button class="button is-danger modal_close"><span class="icon is-small"><i class="fas fa-times"></i></span><span>Cancel</span></button>
+                </footer>
+            </div>
+        </div>
+
+        <div class="columns m-0">
+            <div id="sidemenu" class="column is-narrow" style="width: 250px;background: rgb(5, 68, 104);">
+            </div>
+            <div class="column m-1" style="background-color: #f4fbff;">
+                <div class="container">
+                    <p class="panel-heading has-text-white" style="background: rgb(5, 68, 104)">Trouble Ticket</p>
+                    <div class="columns">
+                        <div class="column">
+                            <div class="field pl-4 pt-4 pr-4">
+                                <label class="label">Start Date</label>
+                                <div class="control">
+                                    <input id="start_date" class="input" type="date">
+                                </div>
+                                <div class="control mt-3">
+                                    <button id="button_refresh" class="button is-success" style="background: rgb(5, 68, 104);width:110px">Refresh</button>
+                                    <button id="button_new_ticket" class="button is-success" style="background: rgb(5, 68, 104);width:110px">New Ticket</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field pl-4 pt-4 pr-4">
+                                <label class="label">End Date</label>
+                                <div class="control">
+                                    <input id="end_date" class="input" type="date">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field pl-4 pt-4 pr-4">
+                                <label class="label">Ticket No</label>
+                                <div class="control">
+                                    <input id="ticket_no" class="input" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field pl-4 pt-4 pr-4">
+                                <label class="label">Status</label>
+                                <div class="control">
+                                    <div class="select">
+                                        <select>
+                                            <option>All Ticket</option>
+                                            <option>New</option>
+                                            <option>Closed</option>
+                                            <option>On Progress</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table is-fullwidth" style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Ticket No</th>
+                                <th>Subject</th>
+                                <th>Date Open</th>
+                                <th>Date Closed</th>
+                                <th>Raised By</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>20230401023</td>
+                                <td>New rule doesnt work</td>
+                                <td>2023-04-01</td>
+                                <td>2023-04-01</td>
+                                <td>fds01</td>
+                                <td>Closed</td>
+                            </tr>
+
+                            <tr>
+                                <td>20230401024</td>
+                                <td>Duplicate notification</td>
+                                <td>2023-04-01</td>
+                                <td></td>
+                                <td>fds01</td>
+                                <td>New</td>
+                            </tr>
+
+                            <tr>
+                                <td>20230401025</td>
+                                <td>Access to dashboard slow</td>
+                                <td>2023-04-01</td>
+                                <td></td>
+                                <td>fds02</td>
+                                <td>On Progress</td>
+                            </tr>
+
+                            <tr>
+                                <td>20230401026</td>
+                                <td>Dashboard password too complex</td>
+                                <td>2023-04-01</td>
+                                <td>2023-04-02</td>
+                                <td>fds02</td>
+                                <td>Closed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script>
+        </script>
+        <script>
+            $(document).ready(function ()
+            {
+                $('#sidemenu').load('sidemenu.html');
+
+                var current_date = getCurrentDateTime().substring(0, 10);
+                $("#start_date").val(current_date);
+                $("#end_date").val(current_date);
+
+                $("#button_new_ticket").click(function ()
+                {
+                    $("#modal-new-ticket").addClass("is-active");
+                });
+
+                $(".modal_close").click(function ()
+                {
+                    $("#modal-new-ticket").removeClass("is-active");
+                });
+            });
+        </script>
+    </body>
+
+</html>

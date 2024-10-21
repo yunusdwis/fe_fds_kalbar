@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fraud Management System | Transaction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bulma.min.css" />
+    <link rel="stylesheet" href="css/fontawesome/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+    <link href="css/datatables.min.css" rel="stylesheet" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+
+<body>
+    <div id="modal-view-transaction" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content" style="width:640px">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">View Transaction Detail</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <textarea id="transaction_detail" class="textarea" placeholder="Transaction detail will be shown here"
+                    style="height:60vh"></textarea>
+            </div>
+            <footer class="modal-card-foot">
+                <button class="button modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Close</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="columns m-0">
+        <div id="sidemenu" class="column is-narrow fds-sidemenu" style="width: 250px;">
+        </div>
+        <div class="column has-bakground-light m-1">
+            <div class="container mr-4">
+                <p class="panel-heading fds-background-dark">Transaction</p>
+                <div class="columns">
+                    <div class="column">
+                        <div class="field pl-2 pt-4 pr-2">
+                            <label class="label">Start Date</label>
+                            <div class="control">
+                                <input id="start_date" class="input" type="datetime-local">
+                            </div>
+                            <div class="control mt-3" style="display: flex;">
+                                <button id="button_refresh" class="button fds-background-dark"
+                                    style="width:90px">Refresh</button>
+                                <button id="button_export" class="button fds-background-dark"
+                                    style="width:90px">Export</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field pl-2 pt-4 pr-2">
+                            <label class="label">End Date</label>
+                            <div class="control">
+                                <input id="end_date" class="input" type="datetime-local">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field pl-2 pt-4 pr-2">
+                            <label class="label">Channel</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select id="channel">
+                                        <option>ALL CHANNEL</option>
+                                        <option>ATM</option>
+                                        <option>ATM BERSAMA</option>
+                                        <option>ATM PRIMA</option>
+                                        <option>CMS-INTERNET BANKING</option>
+                                        <option>EDC ARTAJASA</option>
+                                        <option>EDC PRIMA</option>
+                                        <option>MOBILE BANKING</option>
+                                        <option>QRIS ARTAJASA</option>
+                                        <option>QRIS PRIMA </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field pl-2 pt-4 pr-2">
+                            <label class="label">Fraud Category</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select id="fraud_level">
+                                        <option>All Transaction</option>
+                                        <option>Fraudulent Only</option>
+                                        <option>Low</option>
+                                        <option>Medium</option>
+                                        <option>High</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field pl-2 pt-4 pr-2">
+                            <label class="label">Transaction Type</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select onchange="loadTable()" id="transaction_type">
+                                        <option value="">All Type</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex;">
+                    <div class="field pl-4 pr-2 mr-2" style="width: 10%;">
+                        <label class="label">Filter Row</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select onchange="loadTransaction(true)" id="filter-row">
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                    <option>1000</option>
+                                    <option>All</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 50%;">
+                        <label class="label">Search Pan No</label>
+                        <div class="control">
+                            <input id="search" onkeyup="loadTransaction()" class="input" type="text">
+                        </div>
+                    </div>
+
+                </div>
+                <table id="table-transaction" class="table is-fullwidth fds-background-transparent">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">Datetime</th>
+                            <th onclick="sortTable(1)">Channel</th>
+                            <th onclick="sortTable(2)">Account No</th>
+                            <th onclick="sortTable(3)">Pan No</th>
+                            <th onclick="sortTable(4)">Transaction Type</th>
+                            <th onclick="sortTable(5)">Amount</th>
+                            <th onclick="sortTable(6)">Refrence Number</th>
+                            <th onclick="sortTable(7)">Rule</th>
+                            <th onclick="sortTable(8)">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="8" style="text-align: center;">No data available</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        var protocol = location.protocol;
+        var slashes = protocol.concat("//");
+        var host = slashes.concat(window.location.host);
+        var transactions;
+        var transactionsExport;
+        var opcode = [];
+        var currentPage = 1;
+        var totalPage = 1;
+
+        // or as you probably should do
+        var host = location.protocol.concat("//").concat(window.location.host);
+        const BASE_URL = host + "/backend/3000/";
+
+        function loadRules() {
+            var data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'get_rule'
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    var trx_response = $.parseJSON(response);
+
+                    for (i = 0; i < trx_response.rule_id.length; i++) {
+                        $('#fraud_level').append('<option>' + trx_response.rule_id[i] + '</option>');
+                    }
+                });
+        }
+
+        function loadTransaction(restart) {
+            let fraudLevel = $('#fraud_level').val();
+
+            switch(fraudLevel){
+                case 'Low':
+                case 'Medium':
+                case 'High':
+                fraudLevel = 'Fraudulent Only';
+                break;
+                default:
+                fraudLevel = fraudLevel;
+            }
+
+            var data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'get_transaction',
+                start_date: $('#start_date').val(),
+                end_date: $('#end_date').val(),
+                channel: $('#channel').val(),
+                fraud_level: fraudLevel
+            };
+
+            $.get(BASE_URL + 'opcode', function (response) {
+                opcode = response;
+                if (opcode) {
+                    opcode.forEach(item => {
+                        $('#transaction_type').append(
+                            `<option value="${item.code}">${item.type + "-" + item.description}</option>`
+                        );
+                    })
+                }
+                $.post("/backend/fds/", JSON.stringify(data),
+                    function (response2) {
+                        transactions = $.parseJSON(response2);
+                        loadTable(restart);
+                    });
+            });
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    transactions = $.parseJSON(response);
+                    loadTable(restart);
+                });
+        }
+
+        function translateChannel(channel) {
+            let translate = channel.replace("_", " ");
+
+            return translate;
+        }
+
+        function sortTable(columnIndex) {
+
+        }
+
+        function translateOpcode(channel, transaction_type) {
+            let type = '';
+
+            if (transaction_type) {
+                type = opcode.find(item => item.code == transaction_type.substr(transaction_type
+                    .length - 5));
+
+                if (!type) {
+                    type = opcode.find(item => item.code == transaction_type.replace(/\s/g, ''));
+                }
+                if (!type) {
+                    type = opcode.find(item => item.code == transaction_type.slice(0, 2));
+                }
+                if (!type) {
+                    type = opcode.find(item => item.code == transaction_type.slice(0, 1));
+                }
+                if (!type) {
+                    type = opcode.find(item => item.code == transaction_type);
+                }
+                type = type ? type.description : transaction_type;
+
+            }
+
+            return type;
+        }
+
+        function loadTable(restart = false) {
+            transactionsExport = [];
+            $('#table-transaction tbody tr').remove();
+            $('#numbering button').remove();
+            var trx_response = [];
+
+            if (transactions.rqtimestamp) {
+                transactions.rqtimestamp.forEach((item, index) => {
+                    trx_response.push({
+                        business_cycle: transactions.business_cycle[index] ?? null,
+                        stan: transactions.stan[index] ?? null,
+                        rqtimestamp: transactions.rqtimestamp[index],
+                        channel: translateChannel(transactions.channel[index]),
+                        pan: transactions.pan ? transactions.pan[index] : 0,
+                        account_no: transactions.account_no[index] ?? null,
+                        transaction_type: translateOpcode(transactions.channel[index], transactions
+                            .transaction_type[index]),
+                        amount: transactions.amount[index] ?? null,
+                        rule_id: transactions.rule_id[index] ?? null,
+                        fraud_level: transactions.fraud_level[index] ?? null
+                    })
+
+                    transactionsExport.push(trx_response[index].rqtimestamp);
+                    transactionsExport.push(trx_response[index].business_cycle + trx_response[index].stan);
+                    transactionsExport.push(trx_response[index].channel);
+                    transactionsExport.push(trx_response[index].pan);
+                    transactionsExport.push(trx_response[index].account_no);
+                    transactionsExport.push(trx_response[index].channel, trx_response[index]
+                        .transaction_type);
+                    transactionsExport.push(trx_response[index].amount);
+                    transactionsExport.push(trx_response[index].rule_id);
+                    transactionsExport.push(trx_response[index].fraud_level);
+                })
+            }
+
+
+            var search = $('#search').val();
+            var ttype = $('#transaction_type').val();
+
+            var filterRow = parseInt($('#filter-row').val());
+
+            trx_response = trx_response.slice(0, filterRow);
+
+            switch($('#fraud_level').val()){
+                case 'Low':
+                trx_response = trx_response.filter(item => item.fraud_level == '1' || item.fraud_level == 'low')
+                break;
+                case 'Medium':
+                trx_response = trx_response.filter(item => item.fraud_level == '2' || item.fraud_level == 'medium')
+                break;
+                case 'High':
+                trx_response = trx_response.filter(item => item.fraud_level == '3' || item.fraud_level == 'high')
+                break;
+            }
+
+            if (trx_response.length > 0) {
+                trx_response.forEach(item => {
+                    if (item.fraud_level == '0' || item.fraud_level == 'normal') {
+                        item.fraud_level = '';
+                    }
+                    if (item.fraud_level == '1' || item.fraud_level == 'low') {
+                        item.fraud_level =
+                            '<span style="width: 100px;" class="tag is-warning is-light">LOW</span>';
+                    }
+                    if (item.fraud_level == '2' || item.fraud_level == 'medium') {
+                        var audio = new Audio('assets/bell.mp3');
+                        audio.play();
+                        item.fraud_level =
+                            '<span style="width: 100px;" class="tag is-warning">MEDIUM</span>';
+                    }
+                    if (item.fraud_level == '3' || item.fraud_level == 'high') {
+                        // var audio = new Audio('assets/bell.mp3');
+                        // audio.play();
+                        item.fraud_level =
+                            '<span style="width: 100px;"  class="tag is-danger">HIGH</span>';
+                    }
+
+                    $('<tr class="transaction">').append(
+                        $('<td>').text(item.rqtimestamp.substring(0, 19)),
+                        $('<td>').text(item.channel),
+                        $('<td>').text(item.account_no),
+                        $('<td>').text(item.pan),
+                        $('<td>').text(item.transaction_type),
+                        $('<td>').text(item.amount),
+                        $('<td>').html('<span class="transaction" style="width:100px">' +
+                            item
+                            .business_cycle + '.' + item.stan + '</span>'),
+                        $('<td>').text(item.rule_id),
+                        $('<td>').html(item.fraud_level),
+                    ).appendTo('#table-transaction tbody');
+                })
+            } else {
+                $('<tr>').append(
+                        $('<td colspan="9" class="has-text-centered">').text('Data tidak ditemukan'),
+                    ).appendTo('#table-transaction tbody');
+            }
+        }
+
+        $(document).ready(function () {
+            $('#sidemenu').load('sidemenu.html');
+
+            var now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+
+            /* remove second/millisecond if needed - credit ref. https://stackoverflow.com/questions/24468518/html5-input-datetime-local-default-value-of-today-and-current-time#comment112871765_60884408 */
+            now.setMilliseconds(null)
+            now.setSeconds(null)
+
+            var current_date = getCurrentDateTime().substring(0, 10);
+            $("#start_date").val(now.toISOString().slice(0, -1));
+            $("#end_date").val(now.toISOString().slice(0, -1));
+
+            loadTransaction();
+
+            loadRules();
+
+            setInterval(() => {
+                loadTransaction();
+            }, 5000);
+
+            $("#button_refresh").click(function () {
+                loadTransaction();
+            });
+
+            $("#button_export").click(function () {
+                $('#button_export').prop('disbaled', true);
+
+                let startDate = $("#start_date").val().split('-').reverse().join("-");
+                let endDate = $("#end_date").val().split('-').reverse().join("-");
+                let filename = startDate != endDate ? `FDS Transaction ${startDate} ~ ${endDate}.xls` : `FDS Transaction ${startDate}.xls`
+
+                var htmlTable = document.getElementById("table-transaction");
+
+                var workbook = XLSX.utils.table_to_book(htmlTable);
+
+                XLSX.writeFile(workbook, filename);
+
+                $('#button_export').prop('disbaled', false);
+            });
+
+            $(document).on('click', '.transaction', function () {
+                let selected_column = $(this).closest('tr').find('td:eq(6)').text();
+                let bc = selected_column.split('.')[0];
+                let stan = selected_column.split('.')[1];
+
+                var data = {
+                    user_name: sessionStorage.getItem("user_name"),
+                    action: 'get_transaction_detail',
+                    business_cycle: bc,
+                    stan: stan
+                };
+
+                $.post("/backend/fds/", JSON.stringify(data),
+                    function (response) {
+                        let json = JSON.parse(response);
+                        $("#transaction_detail").val(JSON.stringify(json, null, 2));
+                        $("#modal-view-transaction").addClass("is-active");
+                    });
+            });
+
+            $(".modal_close").click(function () {
+                $("#modal-view-transaction").removeClass("is-active");
+            });
+        });
+
+        function prepCSVRow(arr, columnCount, initial) {
+            var row = ''; // this will hold data
+            var delimeter = '|'; // data slice separator, in excel it's `;`, in usual CSv it's `,`
+            var newLine = '\r\n'; // newline separator for CSV row
+
+            /*
+             * Convert [1,2,3,4] into [[1,2], [3,4]] while count is 2
+             * @param _arr {Array} - the actual array to split
+             * @param _count {Number} - the amount to split
+             * return {Array} - splitted array
+             */
+            function splitArray(_arr, _count) {
+                var splitted = [];
+                var result = [];
+                _arr.forEach(function (item, idx) {
+                    if ((idx + 1) % _count === 0) {
+                        splitted.push(item);
+                        result.push(splitted);
+                        splitted = [];
+                    } else {
+                        splitted.push(item);
+                    }
+                });
+                return result;
+            }
+            var plainArr = splitArray(arr, columnCount);
+            // Converts `['a', 'b', 'c']` to `a,b,c` string
+            plainArr.forEach(function (arrItem) {
+                arrItem.forEach(function (item, idx) {
+                    row += item + ((idx + 1) === arrItem.length ? '' : delimeter);
+                });
+                row += newLine;
+            });
+            return initial + row;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Fraud Management System</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/bulma.min.css" />
+        <link rel="stylesheet" href="css/fontawesome/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+        <script src="js/jquery.min.js"></script>
+        <script src="js/util.js"></script>
+
+        <style>
+            html, body {
+                height: 100%;
+            }
+        </style>
+
+    </head>
+
+    <body>
+        <div class="columns m-0">
+            <div id="sidemenu" class="column is-narrow" style="width: 250px;background: rgb(5, 68, 104);">
+            </div>
+            <div class="column m-1" style="background-color: #f4fbff;">
+                <div class="container">
+                    <p class="panel-heading has-text-white" style="background: rgb(5, 68, 104)">Documentation</p>
+
+                    <p class="title is-3 mt-6 mb-6">I. Introduction</p>
+                    <p class="subtitle is-5">A. Purpose of the Manual</p>
+                    <p class="subtitle is-5">B. Scope of the Manual</p>
+                    <p class="subtitle is-5">C. Intended Audience</p>
+                    <p class="subtitle is-5">D. Overview of the Software</p>
+
+                    <p class="title is-3 mt-6 mb-6">II. Getting Started</p>
+                    <p class="subtitle is-5">A. System Requirements</p>
+                    <p class="subtitle is-5">B. Installation Instructions</p>
+                    <p class="subtitle is-5">C. Licensing Information</p>
+                    <p class="subtitle is-5">D. Support and Maintenance</p>
+
+                    <p class="title is-3 mt-6 mb-6">III. Using the Software</p>
+                    <p class="subtitle is-5">A. User Interface Overview</p>
+                    <p class="subtitle is-5">B. Functions and Features</p>
+                    <p class="subtitle is-6">1. Feature 1</p>
+                    <p class="subtitle is-6">2. Feature 2</p>
+                    <p class="subtitle is-6">3. Feature 3</p>
+                    <p class="subtitle is-5">C. Navigation</p>
+                    <p class="subtitle is-5">D. Input and Output</p>
+                    <p class="subtitle is-5">E. Data Management</p>
+                    <p class="subtitle is-5">F. Troubleshooting</p>
+
+                    <p class="title is-3 mt-6 mb-6">IV. Customization and Configuration</p>
+                    <p class="subtitle is-5">A. Customizing User Interface</p>
+                    <p class="subtitle is-5">B. Configuring Settings</p>
+                    <p class="subtitle is-5">C. Integrating with Other Systems</p>
+                    <p class="subtitle is-5">D. Creating Custom Reports</p>
+
+                    <p class="title is-3 mt-6 mb-6">V. Advanced Features</p>
+                    <p class="subtitle is-5">A. Advanced Analysis Tools</p>
+                    <p class="subtitle is-5">B. Data Mining</p>
+                    <p class="subtitle is-5">C. Scripting and Automation</p>
+                    <p class="subtitle is-5">D. Collaboration and Sharing</p>
+
+                    <p class="title is-3 mt-6 mb-6">VI. Glossary</p>
+                    <p class="subtitle is-5">A. Key Terminology and Concepts</p>
+
+                    <p class="title is-3 mt-6 mb-6">VII. Appendices</p>
+                    <p class="subtitle is-5">A. Reference Information</p>
+                    <p class="subtitle is-5">B. Additional Resources</p>
+                    <p class="subtitle is-5">C. Troubleshooting Guide</p>
+                    <p class="subtitle is-5">D. Frequently Asked Questions</p>
+                    <p class="subtitle is-5">E. Release Notes</p>
+
+                    <p class="title is-3 mt-6 mb-6">VIII. Index</p>
+                    <p class="subtitle is-5">A. Comprehensive Index</p>
+                </div>
+            </div>
+        </div>
+        <script>
+        </script>
+        <script>
+            $(document).ready(function ()
+            {
+                $('#sidemenu').load('sidemenu.html');
+
+                var current_date = getCurrentDateTime().substring(0, 10);
+                $("#start_date").val(current_date);
+                $("#end_date").val(current_date);
+            });
+        </script>
+    </body>
+
+</html>

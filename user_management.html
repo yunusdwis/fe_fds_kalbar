@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fraud Management System  | User Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bulma.min.css" />
+    <link rel="stylesheet" href="css/fontawesome/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/util.js"></script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="modal-new-user" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">New User</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="content">
+                    <div class="container">
+                        <div class="field">
+                            <p class="control">
+                                <label>Username <span style="font-size:15px; color: red;" id="span-create-username-user"></span></label>
+                                <input onchange="checkUsername()" id="create-username-user" class="input" type="text" placeholder="Username">
+                            </p>
+                        </div>
+                        <div class="field">
+                            <p class="control">
+                                <label>Role</label>
+                                <select id="create-role-user" class="select" style="width:100%">
+                                    <option value="0">Administrator</option>
+                                    <option value="1">Maker</option>
+                                    <option value="2">Checker</option>
+                                    <option value="3">Approver</option>
+                                    <option value="4">Operator</option>
+                                </select>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <label class="checkbox">
+                                <input id="create-active-user" type="checkbox">
+                                Active
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                    <button onclick="storeUser()" id="button-save-user" class="button is-success"><span
+                        class="icon is-small"><i class="fas fa-check"></i></span><span>Save</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-edit-user" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Reset Password User</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="content">
+                    <div class="container">
+                        <p>Password user will be reset?</p>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button onclick="updateUser()" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>Save</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-delete-user" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Delete User</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="content">
+                    <div class="container">
+                        <p>Delete selected user?</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="modal-card-foot">
+                <button onclick="destroyUser()" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>Delete</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="columns m-0">
+        <div id="sidemenu" class="column is-narrow fds-sidemenu" style="width: 250px;">
+        </div>
+        <div class="column m-1" style="background-color: #f4fbff;">
+            <div class="container">
+                <p class="panel-heading has-text-white" style="background: rgb(5, 68, 104)">User Management</p>
+                <div class="control mt-4">
+                    <button id="button_new_user" class="button fds-background-dark">New User...</button>
+                </div>
+                <table id="table-user" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        let user = [];
+        let selected;
+        var protocol = location.protocol;
+var slashes = protocol.concat("//");
+var host = slashes.concat(window.location.host);
+
+// or as you probably should do
+var host = location.protocol.concat("//").concat(window.location.host);
+        const BASE_URL = host +  "/backend/3000/";
+        function editUser(index) {
+            $("#modal-edit-user").addClass("is-active");
+            selected = user[index];
+            let active = selected.active == 1 ? true : false;
+            $('#edit-username-user').val(selected.user_name);
+            $('#edit-role-user option').each(function (index) {
+                if (index == selected.role_id) {
+                    $('#edit-role-user option')[index].setAttribute('selected', true);
+                }
+            });
+            $('#edit-active-user').prop('checked', active);
+        }
+
+function checkUsername() {
+            let exists = false;
+
+            $('#create-username-user').val($('#create-username-user').val().toUpperCase());
+            $('#create-username-user').val($('#create-username-user').val().replace(/\s/g, ''));
+
+            user.forEach(item => {
+                if (item.user_name == $('#create-username-user').val()) {
+                    exists = true;
+                }
+            })
+
+            if (exists) {
+                $('#span-create-username-user').text('(username telah digunakan)');
+                $('#button-save-user').attr('disabled', true);
+            } else {
+                $('#span-create-username-user').text('');
+                $('#button-save-user').attr('disabled', false);
+            }
+        }
+
+        function storeUser() {
+            var data = {
+                user_name: $('#create-username-user').val(),
+                role_id: parseInt($('#create-role-user').val()),
+                password: '12345678',
+                active: $('#create-active-user').val() == 'on' ? 1 : 0
+            };
+
+            $.ajax({
+                url: BASE_URL + 'user',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (data) {
+                    alert('Pengguna berhasil ditambahkan');
+            $("#modal-new-user").removeClass("is-active");
+                    loadUser();
+                    $('#create-username-user').val('');
+            $('#create-role-user').val('');
+            $('#create-active-user').val('');
+                },
+                error: function (err) {
+                    console.log('Error:', err);
+                }
+            });
+        }
+
+        function updateUser() {
+            var data = {
+                user_name: selected.user_name,
+                password: '12345678',
+            };
+
+            $.ajax({
+                url: BASE_URL + 'user/' + selected.user_name,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (data) {
+                    alert('Password pengguna berhasil direset');
+            $("#modal-edit-user").removeClass("is-active");
+                    loadUser();
+                },
+                error: function (err) {
+                    console.log('Error:', err);
+                }
+            });
+        }
+
+        function deleteUser(index) {
+            $("#modal-delete-user").addClass("is-active");
+            selected = user[index];
+        }
+
+        function destroyUser() {
+            $.ajax({
+                url: BASE_URL + 'user/delete/' + selected.user_name,
+                type: 'POST',
+                contentType: 'application/json',
+                success: function (data) {
+                    alert('Pengguna berhasil dihapus');
+                    $("#modal-edit-user").removeClass("is-active");
+                    $("#modal-delete-user").removeClass("is-active");
+
+                    loadUser();
+                },
+                error: function (err) {
+                    console.log('Error:', err);
+                }
+            });
+        }
+
+        function loadUser() {
+            $.get(BASE_URL + 'user', function (response) {
+                $("#table-user tbody tr td").remove();
+                user = response;
+                response.forEach((item, index) => {
+                    let role;
+                    let last_login = item.last_login.split("T");
+                    last_login = last_login[0] + " " + last_login[1].split(
+                        ".")[0];
+
+                    switch (item.role_id) {
+                        case 0:
+                            role = 'Administrator';
+                            break;
+                        case 1:
+                            role = 'Maker';
+                            break;
+                        case 2:
+                            role = 'Checker';
+                            break;
+                        case 3:
+                            role = 'Approver';
+                            break;
+                        case 4:
+                            role = 'Operator';
+                            break;
+                    }
+
+                    let status = item.active == 1 ? 'Aktif' : 'Belum Aktif';
+
+                    const editBtn =
+                        `<button type="button" onclick="editUser(${index})" class="button_edit_user button is-warning">Reset</button>`;
+                    const deleteBtn =
+                        `<button type="button" onclick="deleteUser(${index})" class="button_delete_user button is-danger">Delete</button>`;
+
+                    $('<tr>').append(
+                        $('<td>').text(item.user_name),
+                        $('<td>').text(role),
+                        $('<td>').text(status),
+                        $('<td>').text(last_login),
+                        $('<td>').html(editBtn + "&nbsp;" + deleteBtn),
+                    ).appendTo('#table-user');
+                });
+            });
+        }
+
+        $(document).ready(function () {
+
+            $('#sidemenu').load('sidemenu.html');
+
+            var current_date = getCurrentDateTime().substring(0, 10);
+            $("#start_date").val(current_date);
+            $("#end_date").val(current_date);
+
+            $("#button_new_user").click(function () {
+                $("#modal-new-user").addClass("is-active");
+            });
+
+            $(".modal_close").click(function () {
+                $("#modal-new-user").removeClass("is-active");
+                $("#modal-edit-user").removeClass("is-active");
+                $("#modal-delete-user").removeClass("is-active");
+            });
+
+            $(".button_edit_user").click(function (item) {
+                console.log(item)
+            });
+
+            $(".modal_close").click(function () {
+                $("#modal-edit-user").removeClass("is-active");
+            });
+
+            $("#button_delete_user").click(function () {
+                $("#modal-delete-user").addClass("is-active");
+            });
+
+            $(".modal_close").click(function () {
+                $("#modal-delete-user").removeClass("is-active");
+            });
+
+
+
+
+            loadUser()
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sidemenu</title>
+    <style>
+        .d-none {
+            display: none !important;
+        }
+
+        .qmenuitem {
+            display: block;
+            padding: 8px;
+            margin-left: 8px;
+            margin-right: 0px;
+            border-bottom: 2px solid #10558d;
+            color: rgb(241, 237, 237);
+            position: relative;
+        }
+
+        .qmenuitem .icon {
+            color: #dee4ec;
+            width: 24px;
+            display: inline-block;
+        }
+
+        .qmenuitem:hover,
+        .qmenuitem.active {
+            color: #0c7db1;
+            background: white;
+            border-right: 2px solid rgb(5, 68, 104);
+        }
+
+        .qmenuitem:hover .icon,
+        .qmenuitem.active .icon {
+            color: #0c7db1;
+        }
+
+        .qmenuitem:hover:before,
+        .qmenuitem.active:before {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="width:100%; height: 100vh;">
+        <div class="container has-text-centered mt-5 mb-4" style="width:100px">
+            <figure class="image is-96x96 mb-4">
+                <img class="is-rounded" src="img/avatar1.jpg" alt="profile_picture">
+            </figure>
+            <h3 stylle="text-align: center;" class="has-text-white" id="user-hello">User</h3>
+        </div>
+        <a id="dashboard-menu" href="dashboard.html" class="d-none qmenuitem">
+            <span class="icon"><i class="fas fa-desktop"></i></span>
+            <span>Dashboard</span>
+        </a>
+        <a id="transaction-menu" href="transaction.html" class="d-none qmenuitem">
+            <span class="icon"><i class="fas fa-user-friends"></i></span>
+            <span>Transaction</span>
+        </a>
+        <div id="configuration-menu" class="d-none">
+            <a href="" class="qmenuitem">
+                <span class="icon"><i class="fas fa-tachometer-alt"></i></span>
+                <span>Configuration</span>
+            </a>
+            <a id="parameter-menu" href="parameter.html" class="qmenuitem">
+                <div class="ml-5">
+                    <span class="icon ml-1"><i class="fa-regular fa-file-lines"></i></span>
+                    <span>Parameter</span>
+                </div>
+            </a>
+            <a id="rule-menu" href="rule.html" class="qmenuitem">
+                <div class="ml-5">
+                    <span class="icon ml-1"><i class="fa-regular fa-file-lines"></i></span>
+                    <span>Rules</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- <a href="#" class="qmenuitem">
+                <span class="icon"><i class="fas fa-chart-line"></i></span>
+                <span>Reports</span>
+            </a> -->
+        <a id="network_fraud-menu" href="network_fraud.html" class="d-none qmenuitem">
+            <span class="icon"><i class="fas fa-cog"></i></span>
+            <span>Network Fraud</span>
+        </a>
+        <a id="change_password-menu" href="change_password.html" class="qmenuitem">
+            <span class="icon"><i class="fas fa-user-shield"></i></span>
+            <span>Change Password</span>
+        </a>
+        <a id="user_management-menu" href="user_management.html" class="d-none qmenuitem">
+            <span class="icon"><i class="fas fa-cog"></i></span>
+            <span>User Management</span>
+        </a>
+        <a id="audit_trail-menu" href="audit_trail.html" class="d-none qmenuitem">
+            <span class="icon"><i class="fas fa-cog"></i></span>
+            <span>Audit Trail</span>
+        </a>
+        <!-- <a id="hd-menu" href="trouble_ticket.html" class="qmenuitem">
+            <span class="icon"><i class="fas fa-cog"></i></span>
+            <span>Helpdesk</span>
+        </a> -->
+        <!-- <a href="documentation.html" class="qmenuitem">
+                <span class="icon"><i class="fas fa-cog"></i></span>
+                <span>Documentation</span>
+            </a> -->
+        <!-- <a href="notification.html" class="qmenuitem">
+                <span class="icon"><i class="fas fa-cog"></i></span>
+                <span>Notification</span>
+            </a> -->
+        <a id="menu_logout" href="login.html" class="qmenuitem">
+            <span class="icon"><i class="fas fa-arrow-right-from-bracket"></i></span>
+            <span>Logout</span>
+        </a>
+
+        <div class="container has-text-centered mt-5 mb-4">
+            <span style="color: rgb(241, 237, 237);">&#169; 2023 APLINK</span>
+        </div>
+    </div>
+
+    <script>
+        if (!sessionStorage.getItem("token")) {
+            window.location = 'login.html';
+        }
+
+        function getActiveMenu() {
+            var path = window.location.pathname;
+            var page = path.split("/").pop();
+            page = page.replace(".html", "");
+            $('.qmenuitem').removeClass('active');
+            $(`#${page}-menu`).addClass('active');
+        }
+
+        $(document).ready(function () {
+            getActiveMenu();
+
+            $("#menu_logout").click(function () {
+
+                let user_name = sessionStorage.getItem("user_name");
+
+                let data = {
+                    action: 'user_logout',
+                    user_name: user_name
+                };
+
+                sessionStorage.removeItem("token");
+                sessionStorage.removeItem("role_id");
+                sessionStorage.removeItem("user_name");
+
+                $.post("/backend/fds/", JSON.stringify(data),
+                    function () {
+
+                    });
+            });
+        });
+
+        const roleId = parseInt(sessionStorage.getItem("role_id"));
+        let hello = sessionStorage.getItem("user_name") + "<br/>";
+
+        switch (roleId) {
+            case 0:
+                $('#user_management-menu').removeClass('d-none');
+                hello += "ADMINISTRATOR";
+                break;
+            case 1:
+                hello += "MAKER";
+                $('#dashboard-menu').removeClass('d-none');
+                $('#configuration-menu').removeClass('d-none');
+                $('#network_fraud-menu').removeClass('d-none');
+                $("#transaction-menu").removeClass("d-none");
+                break;
+            case 2:
+                hello += "CHECKER";
+                $('#dashboard-menu').removeClass('d-none');
+                $('#audit_trail-menu').removeClass('d-none');
+                $('#configuration-menu').removeClass('d-none');
+                $('#network_fraud-menu').removeClass('d-none');
+                $("#transaction-menu").removeClass("d-none");
+                break;
+            case 3:
+                hello += "APPROVER";
+                $('#dashboard-menu').removeClass('d-none');
+                $('#audit_trail-menu').removeClass('d-none');
+                $('#configuration-menu').removeClass('d-none');
+                $('#network_fraud-menu').removeClass('d-none');
+                $("#transaction-menu").removeClass("d-none");
+                break;
+            case 4:
+                hello += "OPERATOR";
+                $('#dashboard-menu').removeClass('d-none');
+                $('#audit_trail-menu').removeClass('d-none');
+                $("#transaction-menu").removeClass("d-none");
+                break;
+        }
+        $("#user-hello").html(hello);
+    </script>
+
+</body>
+
+</html>

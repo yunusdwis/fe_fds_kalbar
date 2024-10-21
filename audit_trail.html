@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fraud Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bulma.min.css" />
+    <link rel="stylesheet" href="css/fontawesome/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/util.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="columns m-0">
+        <div id="sidemenu" class="column is-narrow fds-sidemenu" style="width: 250px;">
+        </div>
+        <div class="column m-1" style="background-color: #f4fbff;">
+            <div class="container">
+                <p class="panel-heading has-text-white" style="background: rgb(5, 68, 104)">Audit Trail</p>
+                <div class="columns">
+                    <div class="column">
+                        <div class="field pl-4 pt-4 pr-4">
+                            <label class="label">Start Date</label>
+                            <div class="control">
+                                <input id="start_date" class="input" type="date">
+                            </div>
+                            <div class="control mt-3">
+                                <button id="button_refresh" class="button is-success"
+                                    style="background: rgb(5, 68, 104)">Refresh</button>
+                                <button id="button_export" class="button is-success"
+                                    style="background: rgb(5, 68, 104)">Export</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field pl-4 pt-4 pr-4">
+                            <label class="label">End Date</label>
+                            <div class="control">
+                                <input id="end_date" class="input" type="date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field pl-4 pt-4 pr-4">
+                            <label class="label">Username</label>
+                            <div class="control">
+                                <input id="username" class="input" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table id="table-audit-trail" class="table is-fullwidth" style="background: rgba(255,255,255,0)">
+                    <thead>
+                        <tr>
+                            <th>Datetime</th>
+                            <th>Username</th>
+                            <th>Activity</th>
+                            <th>Result</th>
+                            <th>Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        function loadAudtiTrail() {
+            var data = {
+                user_name: sessionStorage.getItem("user_name"),
+                action: 'get_audit_trail'
+            };
+
+            $.post("/backend/fds/", JSON.stringify(data),
+                function (response) {
+                    var trx_response = $.parseJSON(response);
+
+                    $("#table-audit-trail tbody tr").remove();
+
+                    for (i = 0; i < trx_response.user_name.length; i++) {
+                        let remarks = '';
+                        if (trx_response.remarks[i] !== '{}')
+                            remarks = trx_response.remarks[i];
+
+                        remarks = breakLongLines(remarks, 60);
+
+                        if (trx_response.user_name[i].toLowerCase().includes($('#username').val().toLowerCase())) {
+                            $('<tr>').append(
+                                $('<td style="white-space:nowrap;">').text(trx_response.activity_timestamp[i]
+                                    .substring(0, 19)),
+                                $('<td>').text(trx_response.user_name[i]),
+                                $('<td>').text(trx_response.activity_id[i]),
+                                $('<td>').text(trx_response.result[i]),
+                                $('<td class="is-family-monospace">').html(remarks)
+                            ).appendTo('#table-audit-trail');
+                        };
+                    }
+                });
+        }
+
+        function breakLongLines(text, maxLength) {
+            var regex = new RegExp(`.{1,${maxLength}}`, 'g');
+            var formattedText = text.replace(regex, '$&<br>');
+            return formattedText;
+        }
+
+        function prepCSVRow(arr, columnCount, initial) {
+            var row = '';
+            var delimeter = '|';
+            var newLine = '\r\n';
+
+            function splitArray(_arr, _count) {
+                var splitted = [];
+                var result = [];
+                _arr.forEach(function (item, idx) {
+                    if ((idx + 1) % _count === 0) {
+                        splitted.push(item);
+                        result.push(splitted);
+                        splitted = [];
+                    } else {
+                        splitted.push(item);
+                    }
+                });
+                return result;
+            }
+            var plainArr = splitArray(arr, columnCount);
+            plainArr.forEach(function (arrItem) {
+                arrItem.forEach(function (item, idx) {
+                    row += item + ((idx + 1) === arrItem.length ? '' : delimeter);
+                });
+                row += newLine;
+            });
+            return initial + row;
+        }
+
+        $(document).ready(function () {
+            $('#sidemenu').load('sidemenu.html');
+
+            var now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+
+            /* remove second/millisecond if needed - credit ref. https://stackoverflow.com/questions/24468518/html5-input-datetime-local-default-value-of-today-and-current-time#comment112871765_60884408 */
+            now.setMilliseconds(null)
+            now.setSeconds(null)
+
+            var current_date = getCurrentDateTime().substring(0, 10);
+            $("#start_date").val(now.toISOString().slice(0, -1));
+            $("#end_date").val(now.toISOString().slice(0, -1));
+
+            loadAudtiTrail();
+
+            $("#button_refresh").click(function () {
+                loadAudtiTrail();
+            });
+
+            $("#button_export").click(function () {
+                $('#button_export').prop('disbaled', true);
+                let startDate = $("#start_date").val().split('-').reverse().join("-");
+                let endDate = $("#end_date").val().split('-').reverse().join("-");
+                let filename = startDate != endDate ? `FDS Audit Trail ${startDate} ~ ${endDate}.xls` :
+                    `FDS Audit Trail ${startDate}.xlsx`
+                var htmlTable = document.getElementById("table-audit-trail");
+
+                var workbook = XLSX.utils.table_to_book(htmlTable);
+
+                XLSX.writeFile(workbook, filename);
+                $('#button_export').prop('disbaled', false);
+            });
+        });
+    </script>
+</body>
+
+</html>
