@@ -1,37 +1,3 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Fraud Management System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/bulma.min.css" />
-    <link rel="stylesheet" href="css/fontawesome/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
-    <script src="js/jquery.min.js"></script>
-    <script src="js/util.js"></script>
-
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
-
-        .tag {
-            width: 100px;
-        }
-
-        .container-param {
-            height: 70vh;
-            font-size: 14px;
-            overflow-x: auto;
-        }
-    </style>
-
-</head>
-
-<body>
-
     <div id="modal-edit-parameter" class="modal">
         <div class="modal-background"></div>
         <div class="modal-content" style="width:640px">
@@ -72,288 +38,288 @@
         <div id="sidemenu" class="column is-narrow fds-sidemenu" style="width: 250px;">
         </div>
         <div class="column m-1" style="background-color: #f4fbff;">
-            <p class="panel-heading has-text-white" style="background: #054468">System Parameters</p>
 
-            <div class="container-param mb-4">
-                <table id="table-parameter-system" class="table is-striped is-fullwidth"
-                    style="background: rgba(255,255,255,0);">
-                    <thead>
-                        <tr>
-                            <th>Parameter Name</th>
-                            <th>Value</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <p class="panel-heading has-text-white" style="background: #054468">Transaction Parameters</p>
-            <div class="container-param mb-4">
-                <table id="table-parameter-transaction" class="table is-fullwidth"
-                    style="background: rgba(255,255,255,0);">
-                    <thead>
-                        <tr>
-                            <th>Parameter Name</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-
-            <p class="panel-heading has-text-white" style="background: #054468">Opcode</p>
-            <div class="container-param mb-4" style="height:250px">
-                <!-- <div>
-                    <input type="file" id="file-input-opcode" style="display: none">
-                    <button class="button fds-background-dark mt-4 mb-4" id="upload-button-opcode">
-                        <i class="fas fa-upload mr-2"></i>
-                        Opcode
-                    </button>
-                </div> -->
-                <table id="table-opcode" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
-                    <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Type</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <div style="width: 100%; margin-right: 10px;">
-
-                    <p class="panel-heading has-text-white" style="background: #054468">Fraud Level</p>
-                    <div class="container-param mb-4" style="height:250px">
-                        <table id="table-level" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
-                            <thead>
-                                <tr>
-                                    <th>Fraud Level</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="tag is-success">normal</span></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span class="tag is-warning is-light">normal</span></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span class="tag is-warning">medium</span></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span class="tag is-danger">medium</span></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-                <div style="width: 100%;">
-                    <p class="panel-heading has-text-white" style="background: #054468">Action on Fraud</p>
-                    <div class="container-param mb-4" style="height:250px">
-                        <table id="table-action" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
-                            <thead>
-                                <tr>
-                                    <th>Action</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>flag</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>block</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>alert_customer_email</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>alert_customer_sms</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>alert_customer_whatsapp</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>alert_officer_email</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>alert_officer_sms</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>alert_officer_whatsapp</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>add_to_watchlist</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>add_to_blacklist</td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            <div id="system_parameters" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">System Parameters</p>
+                <div class="container-param mb-4">
+                    <table id="table-parameter-system" class="table is-striped is-fullwidth"
+                        style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Parameter Name</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between;">
-                <div style="width: 100%; margin-right: 10px;">
-                    <p class="panel-heading has-text-white" style="background: #054468">Watchlist Account</p>
-                    <div class="container-param mb-4" style="height:250px">
-                        <div>
-                            <input type="file" id="file-input-watchlist-account" style="display: none">
-                            <button class="button fds-background-dark mt-4 mb-4" id="upload-button-watchlist-account">
-                                <i class="fas fa-upload mr-2"></i>
-                                Watchlist Account
-                            </button>
-                        </div>
-                        <table id="table-watchlist-account" class="table is-fullwidth"
-                            style="background: rgba(255,255,255,0);">
-                            <thead>
-                                <tr>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div style="width: 100%;">
-                    <p class="panel-heading has-text-white" style="background: #054468">Watchlist Card</p>
-                    <div class="container-param mb-4" style="height:250px">
-                        <div>
-                            <input type="file" id="file-input-watchlist-card" style="display: none">
-                            <button class="button fds-background-dark mt-4 mb-4" id="upload-button-watchlist-card">
-                                <i class="fas fa-upload mr-2"></i>
-                                Watchlist Card
-                            </button>
-                        </div>
-                        <table id="table-watchlist-card" class="table is-fullwidth"
-                            style="background: rgba(255,255,255,0);">
-                            <thead>
-                                <tr>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+            <div id="transaction_parameters" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Transaction Parameters</p>
+                <div class="container-param mb-4">
+                    <table id="table-parameter-transaction" class="table is-fullwidth"
+                        style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Parameter Name</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between;">
-                <div style="width: 100%; margin-right: 10px;">
-                    <p class="panel-heading has-text-white" style="background: #054468">Blacklist Account</p>
-                    <div class="container-param mb-4" style="height:250px">
-                        <div>
-                            <input type="file" id="file-input-blacklist-account" style="display: none">
-                            <button class="button fds-background-dark mt-4 mb-4" id="upload-button-blacklist-account">
-                                <i class="fas fa-upload mr-2"></i>
-                                Blacklist Account
-                            </button>
-                        </div>
-                        <table id="table-blacklist-account" class="table is-fullwidth"
-                            style="background: rgba(255,255,255,0);">
-                            <thead>
-                                <tr>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div style="width: 100%;">
-                    <p class="panel-heading has-text-white" style="background: #054468">Blacklist Card</p>
-                    <div class="container-param mb-4" style="height:250px">
-                        <div>
-                            <input type="file" id="file-input-blacklist-card" style="display: none">
-                            <button class="button fds-background-dark mt-4 mb-4" id="upload-button-blacklist-card">
-                                <i class="fas fa-upload mr-2"></i>
-                                Blacklist Card
-                            </button>
-                        </div>
-                        <table id="table-blacklist-card" class="table is-fullwidth"
-                            style="background: rgba(255,255,255,0);">
-                            <thead>
-                                <tr>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+            <div id="opcode" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Opcode</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <!-- <div>
+                        <input type="file" id="file-input-opcode" style="display: none">
+                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-opcode">
+                            <i class="fas fa-upload mr-2"></i>
+                            Opcode
+                        </button>
+                    </div> -->
+                    <table id="table-opcode" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between;">
-                <div style="width: 100%; margin-right: 10px;">
-                    <p class="panel-heading has-text-white" style="background: #054468">Dormant Account</p>
-                    <div class="container-param mb-4" style="height:250px">
-                        <div>
-                            <input type="file" id="file-input-dormant-account" style="display: none">
-                            <button class="button fds-background-dark mt-4 mb-4" id="upload-button-dormant-account">
-                                <i class="fas fa-upload mr-2"></i>
-                                Dormant Account
-                            </button>
-                        </div>
-                        <table id="table-dormant-account" class="table is-fullwidth"
-                            style="background: rgba(255,255,255,0);">
-                            <thead>
-                                <tr>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div style="width: 100%;">
-                    <p class="panel-heading has-text-white" style="background: #054468">Terrorist</p>
-                    <div class="container-param mb-4" style="height:250px">
-                        <div id="output"></div>
-                        <div>
-                            <input type="file" id="file-input-terrorist" style="display: none">
-                            <button class="button fds-background-dark mt-4 mb-4" id="upload-button-terrorist">
-                                <i class="fas fa-upload mr-2"></i>
-                                Terrorist Name
-                            </button>
-                        </div>
-                        <table id="table-terrorist" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
-                            <thead>
-                                <tr>
-                                    <th>Value</th>
-                                    <th>Birth</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+            <div id="fraud_level" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Fraud Level</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <table id="table-level" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Fraud Level</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag is-success">normal</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag is-warning is-light">normal</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag is-warning">medium</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag is-danger">medium</span></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
+            <div id="action_on_fraud" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Action on Fraud</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <table id="table-action" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>flag</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>block</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>alert_customer_email</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>alert_customer_sms</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>alert_customer_whatsapp</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>alert_officer_email</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>alert_officer_sms</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>alert_officer_whatsapp</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>add_to_watchlist</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>add_to_blacklist</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="watchlist_account" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Watchlist Account</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <div>
+                        <input type="file" id="file-input-watchlist-account" style="display: none">
+                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-watchlist-account">
+                            <i class="fas fa-upload mr-2"></i>
+                            Watchlist Account
+                        </button>
+                    </div>
+                    <table id="table-watchlist-account" class="table is-fullwidth"
+                        style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="watchlist_card" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Watchlist Card</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <div>
+                        <input type="file" id="file-input-watchlist-card" style="display: none">
+                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-watchlist-card">
+                            <i class="fas fa-upload mr-2"></i>
+                            Watchlist Card
+                        </button>
+                    </div>
+                    <table id="table-watchlist-card" class="table is-fullwidth"
+                        style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="blacklist_account" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Blacklist Account</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <div>
+                        <input type="file" id="file-input-blacklist-account" style="display: none">
+                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-blacklist-account">
+                            <i class="fas fa-upload mr-2"></i>
+                            Blacklist Account
+                        </button>
+                    </div>
+                    <table id="table-blacklist-account" class="table is-fullwidth"
+                        style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="blacklist_card" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Blacklist Card</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <div>
+                        <input type="file" id="file-input-blacklist-card" style="display: none">
+                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-blacklist-card">
+                            <i class="fas fa-upload mr-2"></i>
+                            Blacklist Card
+                        </button>
+                    </div>
+                    <table id="table-blacklist-card" class="table is-fullwidth"
+                        style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="dormant_account" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Dormant Account</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <div>
+                        <input type="file" id="file-input-dormant-account" style="display: none">
+                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-dormant-account">
+                            <i class="fas fa-upload mr-2"></i>
+                            Dormant Account
+                        </button>
+                    </div>
+                    <table id="table-dormant-account" class="table is-fullwidth"
+                        style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="terrorist" style="display:none;">
+                <p class="panel-heading has-text-white" style="background: #054468">Terrorist</p>
+                <div class="container-param mb-4" style="height:250px">
+                    <div id="output"></div>
+                    <div>
+                        <input type="file" id="file-input-terrorist" style="display: none">
+                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-terrorist">
+                            <i class="fas fa-upload mr-2"></i>
+                            Terrorist Name
+                        </button>
+                    </div>
+                    <table id="table-terrorist" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                                <th>Birth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
         </div>
     </div>
@@ -574,8 +540,18 @@
             });
         }
 
+        function showActiveMenu() {
+            var path = window.location.pathname;
+            var page = path.split("/").pop();
+            page = page.replace(".html", "");
+            $(`#${page}`).show();
+        }
+
         $(document).ready(function () {
             $('#sidemenu').load('sidemenu.html');
+
+            showActiveMenu();
+
             const url =
                 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
 
@@ -674,6 +650,3 @@
             });
         });
     </script>
-</body>
-
-</html>
