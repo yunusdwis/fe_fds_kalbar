@@ -34,6 +34,83 @@
         </div>
     </div>
 
+    <div id="modal-add-parameter" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content" style="width:640px">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Add Data</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="content">
+                    <div class="container">
+                        <div id="alert-danger" class="notification is-danger mb-3">
+                            This value already exists!
+                        </div>
+                        <div class="field">
+                            <p class="control">
+                                <label>Value</label>
+                                <input id="new_parameter" class="input">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button  id="button_add_parameter" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>Save</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-clear-parameter" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content" style="width:640px">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Clear Data</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="content">
+                    <div class="container">
+                        <p>Parameter will clear?</p>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button id="button_clear_parameter" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>Save</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="modal-delete-parameter" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content" style="width:640px">
+            <header class="modal-card-head fds-background-dark">
+                <p class="modal-card-title has-text-white">Delete Data</p>
+                <button class="modal_close delete is-large" aria-label="close"></button>
+            </header>
+            <div class="modal-card-body">
+                <div class="content">
+                    <div class="container">
+                        <p>Parameter will deleted?</p>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-card-foot">
+                <button id="button_delete_parameter" class="button is-success"><span class="icon is-small"><i
+                            class="fas fa-check"></i></span><span>Save</span></button>
+                <button class="button is-danger modal_close"><span class="icon is-small"><i
+                            class="fas fa-times"></i></span><span>Cancel</span></button>
+            </footer>
+        </div>
+    </div>
+
     <div class="columns m-0">
         <div id="sidemenu" class="column is-narrow fds-sidemenu" style="width: 250px;">
         </div>
@@ -128,7 +205,7 @@
 
             <div id="action_on_fraud" style="display:none;">
                 <p class="panel-heading has-text-white" style="background: #054468">Action on Fraud</p>
-                <div class="container-param mb-4" style="height:250px">
+                <div class="container-param mb-4">
                     <table id="table-action" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
                         <thead>
                             <tr>
@@ -184,19 +261,42 @@
 
             <div id="watchlist_account" style="display:none;">
                 <p class="panel-heading has-text-white" style="background: #054468">Watchlist Account</p>
-                <div class="container-param mb-4" style="height:250px">
-                    <div>
-                        <input type="file" id="file-input-watchlist-account" style="display: none">
-                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-watchlist-account">
-                            <i class="fas fa-upload mr-2"></i>
-                            Watchlist Account
-                        </button>
+                <div class="container-param mb-4">
+                    <div class="mt-4 mb-4" style="display: flex;">
+                        <div class="mr-2">
+                            <input type="file" id="file-input-watchlist-account" style="display: none">
+                            <button class="button fds-background-dark" id="upload-button-watchlist-account">
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="download-button-watchlist-account">
+                                <i class="fas fa-download mr-2"></i>
+                                Download File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="add-button-watchlist-account">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Data
+                            </button>
+                        </div>
+                        <div>
+                            <div>
+                                <button class="button fds-background-dark" id="clear-button-watchlist-account">
+                                    <i class="fas fa-refresh mr-2"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <table id="table-watchlist-account" class="table is-fullwidth"
                         style="background: rgba(255,255,255,0);">
                         <thead>
                             <tr>
                                 <th>Value</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -207,19 +307,42 @@
 
             <div id="watchlist_card" style="display:none;">
                 <p class="panel-heading has-text-white" style="background: #054468">Watchlist Card</p>
-                <div class="container-param mb-4" style="height:250px">
-                    <div>
-                        <input type="file" id="file-input-watchlist-card" style="display: none">
-                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-watchlist-card">
-                            <i class="fas fa-upload mr-2"></i>
-                            Watchlist Card
-                        </button>
+                <div class="container-param mb-4">
+                    <div class="mt-4 mb-4" style="display: flex;">
+                        <div class="mr-2">
+                            <input type="file" id="file-input-watchlist-card" style="display: none">
+                            <button class="button fds-background-dark" id="upload-button-watchlist-card">
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="download-button-watchlist-card">
+                                <i class="fas fa-download mr-2"></i>
+                                Download File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="add-button-watchlist-card">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Data
+                            </button>
+                        </div>
+                        <div>
+                            <div>
+                                <button class="button fds-background-dark" id="clear-button-watchlist-card">
+                                    <i class="fas fa-refresh mr-2"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <table id="table-watchlist-card" class="table is-fullwidth"
                         style="background: rgba(255,255,255,0);">
                         <thead>
                             <tr>
                                 <th>Value</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -230,19 +353,42 @@
 
             <div id="blacklist_account" style="display:none;">
                 <p class="panel-heading has-text-white" style="background: #054468">Blacklist Account</p>
-                <div class="container-param mb-4" style="height:250px">
-                    <div>
-                        <input type="file" id="file-input-blacklist-account" style="display: none">
-                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-blacklist-account">
-                            <i class="fas fa-upload mr-2"></i>
-                            Blacklist Account
-                        </button>
+                <div class="container-param mb-4">
+                    <div class="mt-4 mb-4" style="display: flex;">
+                        <div class="mr-2">
+                            <input type="file" id="file-input-blacklist-account" style="display: none">
+                            <button class="button fds-background-dark" id="upload-button-blacklist-account">
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="download-button-blacklist-account">
+                                <i class="fas fa-download mr-2"></i>
+                                Download File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="add-button-blacklist-account">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Data
+                            </button>
+                        </div>
+                        <div>
+                            <div>
+                                <button class="button fds-background-dark" id="clear-button-blacklist-account">
+                                    <i class="fas fa-refresh mr-2"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <table id="table-blacklist-account" class="table is-fullwidth"
                         style="background: rgba(255,255,255,0);">
                         <thead>
                             <tr>
                                 <th>Value</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -253,19 +399,42 @@
 
             <div id="blacklist_card" style="display:none;">
                 <p class="panel-heading has-text-white" style="background: #054468">Blacklist Card</p>
-                <div class="container-param mb-4" style="height:250px">
-                    <div>
-                        <input type="file" id="file-input-blacklist-card" style="display: none">
-                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-blacklist-card">
-                            <i class="fas fa-upload mr-2"></i>
-                            Blacklist Card
-                        </button>
+                <div class="container-param mb-4">
+                    <div class="mt-4 mb-4" style="display: flex;">
+                        <div class="mr-2">
+                            <input type="file" id="file-input-blacklist-card" style="display: none">
+                            <button class="button fds-background-dark" id="upload-button-blacklist-card">
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="download-button-blacklist-card">
+                                <i class="fas fa-download mr-2"></i>
+                                Download File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="add-button-blacklist-card">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Data
+                            </button>
+                        </div>
+                        <div>
+                            <div>
+                                <button class="button fds-background-dark" id="clear-button-blacklist-card">
+                                    <i class="fas fa-refresh mr-2"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <table id="table-blacklist-card" class="table is-fullwidth"
                         style="background: rgba(255,255,255,0);">
                         <thead>
                             <tr>
                                 <th>Value</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -276,19 +445,42 @@
 
             <div id="dormant_account" style="display:none;">
                 <p class="panel-heading has-text-white" style="background: #054468">Dormant Account</p>
-                <div class="container-param mb-4" style="height:250px">
-                    <div>
-                        <input type="file" id="file-input-dormant-account" style="display: none">
-                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-dormant-account">
-                            <i class="fas fa-upload mr-2"></i>
-                            Dormant Account
-                        </button>
+                <div class="container-param mb-4">
+                    <div class="mt-4 mb-4" style="display: flex;">
+                        <div class="mr-2">
+                            <input type="file" id="file-input-dormant-account" style="display: none">
+                            <button class="button fds-background-dark" id="upload-button-dormant-account">
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="download-button-dormant-account">
+                                <i class="fas fa-download mr-2"></i>
+                                Download File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="add-button-dormant-account">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Data
+                            </button>
+                        </div>
+                        <div>
+                            <div>
+                                <button class="button fds-background-dark" id="clear-button-dormant-account">
+                                    <i class="fas fa-refresh mr-2"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <table id="table-dormant-account" class="table is-fullwidth"
                         style="background: rgba(255,255,255,0);">
                         <thead>
                             <tr>
                                 <th>Value</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -299,20 +491,43 @@
 
             <div id="terrorist" style="display:none;">
                 <p class="panel-heading has-text-white" style="background: #054468">Terrorist</p>
-                <div class="container-param mb-4" style="height:250px">
+                <div class="container-param mb-4">
                     <div id="output"></div>
-                    <div>
-                        <input type="file" id="file-input-terrorist" style="display: none">
-                        <button class="button fds-background-dark mt-4 mb-4" id="upload-button-terrorist">
-                            <i class="fas fa-upload mr-2"></i>
-                            Terrorist Name
-                        </button>
+                    <div class="mt-4 mb-4" style="display: flex;">
+                        <div class="mr-2">
+                            <input type="file" id="file-input-terrorist" style="display: none">
+                            <button class="button fds-background-dark" id="upload-button-terrorist">
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="download-button-terrorist">
+                                <i class="fas fa-download mr-2"></i>
+                                Download File (.txt)
+                            </button>
+                        </div>
+                        <div class="mr-2">
+                            <button class="button fds-background-dark" id="add-button-terrorist">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Data
+                            </button>
+                        </div>
+                        <div>
+                            <div>
+                                <button class="button fds-background-dark" id="clear-button-terrorist">
+                                    <i class="fas fa-refresh mr-2"></i>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <table id="table-terrorist" class="table is-fullwidth" style="background: rgba(255,255,255,0);">
                         <thead>
                             <tr>
                                 <th>Value</th>
                                 <th>Birth</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -324,6 +539,9 @@
         </div>
     </div>
     <script>
+        var category;
+        var watchlists;
+        var id;
         var protocol = location.protocol;
         var slashes = protocol.concat("//");
         var host = slashes.concat(window.location.host);
@@ -502,36 +720,56 @@
                 $("#table-blacklist-card tbody tr").remove();
                 $("#table-terorrist tbody tr").remove();
 
+                watchlists = response;
+
                 response.forEach((item, index) => {
                     if (item.category == 'DORMANT_ACCOUNT') {
                         $('<tr>').append(
-                            $('<td>').text(item.value)
+                            $('<td>').text(item.value),
+                            $('<td>').html(
+                                `<span onclick="deleteParameter(${item.id})" class="delete-param button is-danger">X</span>`
+                            )
                         ).appendTo('#table-dormant-account');
                     }
                     if (item.category == 'WATCHLIST_ACCOUNT') {
                         $('<tr>').append(
-                            $('<td>').text(item.value)
+                            $('<td>').text(item.value),
+                            $('<td>').html(
+                                `<span onclick="deleteParameter(${item.id})" class="delete-param button is-danger">X</span>`
+                            )
                         ).appendTo('#table-watchlist-account');
                     }
                     if (item.category == 'WATCHLIST_CARD') {
                         $('<tr>').append(
-                            $('<td>').text(item.value)
+                            $('<td>').text(item.value),
+                            $('<td>').html(
+                                `<span onclick="deleteParameter(${item.id})" class="delete-param button is-danger">X</span>`
+                            )
                         ).appendTo('#table-watchlist-card');
                     }
                     if (item.category == 'BLACKLIST_ACCOUNT') {
                         $('<tr>').append(
-                            $('<td>').text(item.value)
+                            $('<td>').text(item.value),
+                            $('<td>').html(
+                                `<span onclick="deleteParameter(${item.id})" class="delete-param button is-danger">X</span>`
+                            )
                         ).appendTo('#table-blacklist-account');
                     }
                     if (item.category == 'BLACKLIST_CARD') {
                         $('<tr>').append(
-                            $('<td>').text(item.value)
+                            $('<td>').text(item.value),
+                            $('<td>').html(
+                                `<span onclick="deleteParameter(${item.id})" class="delete-param button is-danger">X</span>`
+                            )
                         ).appendTo('#table-blacklist-card');
                     }
                     if (item.category == 'TERRORIST_LIST_NAMES') {
                         $('<tr>').append(
                             $('<td>').text(item.value),
-                            $('<td>').text(item.terrorist_birth ? item.terrorist_birth.split("T")[0] : '-')
+                            $('<td>').text(item.terrorist_birth ? item.terrorist_birth.split("T")[0] : '-'),
+                            $('<td>').html(
+                                `<span onclick="deleteParameter(${item.id})" class="delete-param button is-danger">X</span>`
+                            )
                         ).appendTo('#table-terrorist');
                     }
 
@@ -547,8 +785,17 @@
             $(`#${page}`).show();
         }
 
+        $(".modal_close").click(function () {
+            $('#new_parameter').attr('type', 'text');
+            $("#modal-edit-parameter").removeClass("is-active");
+            $("#modal-clear-parameter").removeClass("is-active");
+            $("#modal-add-parameter").removeClass("is-active");
+            $("#modal-delete-parameter").removeClass("is-active");
+        });
+
         $(document).ready(function () {
             $('#sidemenu').load('sidemenu.html');
+            $('#alert-danger').hide();
 
             showActiveMenu();
 
@@ -563,8 +810,9 @@
             var current_date = getCurrentDateTime().substring(0, 10);
             $("#start_date").val(current_date);
             $("#end_date").val(current_date);
+        });
 
-            $(".modal_close").click(function () {
+        $(".modal_close").click(function () {
                 $("#modal-edit-parameter").removeClass("is-active");
             });
 
@@ -582,6 +830,103 @@
                         $("#modal-edit-parameter").removeClass("is-active");
                     });
             });
+
+            $("#button_add_parameter").click(function () {
+                let check = true;
+                let alert_message='Ada kesalahan saat menambahkan parameter';
+
+                new_parameter = $('#new_parameter').val();
+
+                let data = {
+                    value: [new_parameter],
+                    category: category,
+                    terrorist_birth: null
+                };
+
+                var isNumberOnly = /^\d+$/.test(new_parameter);
+
+                if(new_parameter == ''){
+                    alert_message='Value tidak boleh kosong';
+                    check = false;
+                }else if(!isNumberOnly && !category.includes('TERRORIST')){
+                    alert_message='Data mengandung karakter yang tidak didukung';
+                    check = false;
+                }else if (new_parameter.length !== 10 && new_parameter.length !== 11 && category.includes('ACCOUNT')) {
+                    alert_message = 'Nomor akun tidak valid';
+                    check = false;
+                }else if (new_parameter.length !== 16 && category.includes('CARD')) {
+                    alert_message = 'Nomor kartu tidak valid';
+                    check = false;
+                }
+
+                if(!check){
+                    alert(alert_message);
+                    return;
+                }
+
+                $.ajax({
+                    url: BASE_URL + 'watchlists',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        alert('Tambah data berhasil');
+                        location.reload();
+                    },
+                    error: function (err) {
+                        console.log('Error:', err);
+                    }
+                });
+
+                $('#new_parameter').val('');
+            });
+
+            $("#button_clear_parameter").click(function () {
+                var data = {
+                    user_name: sessionStorage.getItem("user_name"),
+                    category: category
+                };
+
+                $.ajax({
+                    url: BASE_URL + 'watchlists/format',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        alert('Parameter berhasil dibersihkan');
+                        location.reload();
+                    },
+                    error: function (err) {
+                        console.log('Error:', err);
+                    }
+                });
+            });
+
+            $("#button_delete_parameter").click(function () {
+                var data = {
+                    user_name: sessionStorage.getItem("user_name"),
+                    id: id
+                };
+
+                $.ajax({
+                    url: BASE_URL + 'watchlists/delete',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        alert('Parameter berhasil dihapus');
+                        location.reload();
+                    },
+                    error: function (err) {
+                        console.log('Error:', err);
+                    }
+                });
+            });
+
+            const deleteParameter = (deleted) => {
+                id = deleted;
+                $("#modal-delete-parameter").addClass("is-active");
+            }
 
             $(document).on('click', '.parameter', function () {
                 var selected_param = $(this).closest('tr').find('td:eq(0)').text();
@@ -605,24 +950,141 @@
                 $('#file-input-dormant-account').click();
             });
 
+            $('#download-button-dormant-account').click(function () {
+                var listItems = watchlists
+                .filter(item => item.category == 'DORMANT_ACCOUNT')
+                .map(item => String(item.value))
+                .join("\n");
+
+                if(!listItems) return;
+
+                var blob = new Blob([listItems], { type: 'text/plain' });
+
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'DORMANT ACCOUNT.txt';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
             $('#upload-button-watchlist-account').click(function () {
                 $('#file-input-watchlist-account').click();
+            });
+
+            $('#download-button-watchlist-account').click(function () {
+                var listItems = watchlists
+                .filter(item => item.category == 'WATCHLIST_ACCOUNT')
+                .map(item => String(item.value))
+                .join("\n");
+
+                if(!listItems) return;
+
+                var blob = new Blob([listItems], { type: 'text/plain' });
+
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'WATCHLIST ACCOUNT.txt';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             });
 
             $('#upload-button-watchlist-card').click(function () {
                 $('#file-input-watchlist-card').click();
             });
 
+            $('#download-button-watchlist-card').click(function () {
+                var listItems = watchlists
+                .filter(item => item.category == 'WATCHLIST_CARD')
+                .map(item => String(item.value))
+                .join("\n");
+
+                if(!listItems) return;
+
+                var blob = new Blob([listItems], { type: 'text/plain' });
+
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'WATCHLIST CARD.txt';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
             $('#upload-button-blacklist-card').click(function () {
                 $('#file-input-blacklist-card').click();
+            });
+
+            $('#download-button-blacklist-card').click(function () {
+                var listItems = watchlists
+                .filter(item => item.category == 'BLACKLIST_CARD')
+                .map(item => String(item.value))
+                .join("\n");
+
+                if(!listItems) return;
+
+
+                var blob = new Blob([listItems], { type: 'text/plain' });
+
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'BLACKLIST CARD.txt';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             });
 
             $('#upload-button-blacklist-account').click(function () {
                 $('#file-input-blacklist-account').click();
             });
 
+            $('#download-button-blacklist-account').click(function () {
+                var listItems = watchlists
+                .filter(item => item.category == 'BLACKLIST_ACCOUNT')
+                .map(item => String(item.value))
+                .join("\n");
+
+                if(!listItems) return;
+
+
+                var blob = new Blob([listItems], { type: 'text/plain' });
+
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'BLACKLIST ACCOUNT.txt';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
             $('#upload-button-terrorist').click(function () {
                 $('#file-input-terrorist').click();
+            });
+
+            $('#download-button-terrorist').click(function () {
+                var listItems = watchlists
+                .filter(item => item.category == 'TERRORIST_LIST_NAMES')
+                .map(item => String(item.value))
+                .join("\n");
+
+                if(!listItems) return;
+
+
+                var blob = new Blob([listItems], { type: 'text/plain' });
+
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'TERRORIST LIST NAMES.txt';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             });
 
             $('#file-input-watchlist-card').change(function (event) {
@@ -648,5 +1110,105 @@
             $('#file-input-terrorist').change(function (event) {
                 uploadFile(event, 'TERRORIST_LIST_NAMES');
             });
-        });
+
+            $('#add-button-watchlist-card').click(function () {
+                $("#modal-add-parameter").addClass("is-active");
+                $('#new_parameter').attr('type', 'number');
+                $("#new_parameter").val('');
+                category = 'WATCHLIST_CARD';
+            });
+
+            $('#add-button-watchlist-account').click(function () {
+                $("#modal-add-parameter").addClass("is-active");
+                $('#new_parameter').attr('type', 'number');
+                $("#new_parameter").val('');
+                category = 'WATCHLIST_ACCOUNT';
+            });
+
+            $('#add-button-blacklist-card').click(function () {
+                $("#modal-add-parameter").addClass("is-active");
+                $('#new_parameter').attr('type', 'number');
+                $("#new_parameter").val('');
+                category = 'BLACKLIST_CARD';
+            });
+
+            $('#add-button-blacklist-account').click(function () {
+                $("#modal-add-parameter").addClass("is-active");
+                $('#new_parameter').attr('type', 'number');
+                $("#new_parameter").val('');
+                category = 'BLACKLIST_ACCOUNT';
+            });
+
+            $('#add-button-dormant-account').click(function () {
+                $("#modal-add-parameter").addClass("is-active");
+                $("#new_parameter").val('');
+                category = 'DORMANT_ACCOUNT';
+            });
+
+            $('#add-button-terrorist').click(function () {
+                $("#modal-add-parameter").addClass("is-active");
+                $("#new_parameter").val('');
+                category = 'TERRORIST_LIST_NAMES';
+            });
+
+            $('#clear-button-watchlist-card').click(function () {
+                $("#modal-clear-parameter").addClass("is-active");
+                category = 'WATCHLIST_CARD';
+            });
+
+            $('#clear-button-watchlist-account').click(function () {
+                $("#modal-clear-parameter").addClass("is-active");
+                category = 'WATCHLIST_ACCOUNT';
+            });
+
+            $('#clear-button-blacklist-card').click(function () {
+                $("#modal-clear-parameter").addClass("is-active");
+                category = 'BLACKLIST_CARD';
+            });
+
+            $('#clear-button-blacklist-account').click(function () {
+                $("#modal-clear-parameter").addClass("is-active");
+                category = 'BLACKLIST_ACCOUNT';
+            });
+
+            $('#clear-button-dormant-account').click(function () {
+                $("#modal-clear-parameter").addClass("is-active");
+                category = 'DORMANT_ACCOUNT';
+            });
+
+            $('#clear-button-terrorist').click(function () {
+                $("#modal-clear-parameter").addClass("is-active");
+                category = 'TERRORIST_LIST_NAMES';
+            });
+
+            $('#new_parameter').on('keyup', function(event) {
+                if(watchlists.find(item => item.category == category && item.value == $('#new_parameter').val()) || !$('#new_parameter').val()){
+                    $('#alert-danger').show();
+                    $('#button_add_parameter').attr('disabled', true);
+                } else {
+                    $('#alert-danger').hide();
+                    $('#button_add_parameter').attr('disabled', false);
+                }
+            });
+
+            $('#new_parameter').on('keypress', function(event) {
+                if($('#new_parameter').attr('type') == 'number'){
+                    if ($.inArray(event.key, ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter']) !== -1 ||
+                    (event.key === '.' && !$(this).val().includes('.')) ||
+                        (event.key >= '0' && event.key <= '9')) {
+                        return;
+                    }
+                    event.preventDefault();
+                }
+            });
+
+            $('#new_parameter').on('paste', function(event) {
+                if($('#new_parameter').attr('type') == 'number'){
+                    var pasteData = (event.originalEvent || event).clipboardData.getData('text');
+                    if (/^\d*\.?\d*$/.test(pasteData)) {
+                        return;
+                    }
+                    event.preventDefault();
+                }
+            });
     </script>
